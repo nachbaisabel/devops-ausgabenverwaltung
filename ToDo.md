@@ -1,7 +1,5 @@
 # ToDo-Liste für alle Wochen
 
-> Diese ToDo-Liste wurde mit Codex auf Grundlage der Kursunterlagen erstellt.
-
 Mein Kurs: **CDS212 – DevOps** · Mein Projekt: **Ausgabenverwaltung**
 
 [x] Woche 1
@@ -14,5 +12,14 @@ Mein Kurs: **CDS212 – DevOps** · Mein Projekt: **Ausgabenverwaltung**
 [] Woche 8
 [] Woche 9
 [] Woche 10
+
+
+### Abgabe Woche 02 – Isabelle Nachbaur
+
+- **Profil (Teilaufgabe A):** https://github.com/nachbaisabel
+- **Projekt-Repository (B/C/D):** https://github.com/nachbaisabel/devops-ausgabenverwaltung
+- **Gemergter Pull Request (C):** https://github.com/nachbaisabel/devops-ausgabenverwaltung/pull/4
+
+
 
 
