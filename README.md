@@ -7,9 +7,9 @@ Datum zu erfassen und nach Monat und Kategorie auszuwerten.
 vollständige DevOps-Kette von der Versionsverwaltung über Tests und Deployment
 bis zum Monitoring nach. Der fachliche Umfang bleibt bewusst klein.
 
-**Stand: Woche 2.** Repository und Arbeitsregeln sind vorbereitet. Die Anwendung
-ist noch nicht implementiert; die folgenden Endpunkte und Konfigurationswerte
-beschreiben den geplanten Aufbau.
+**Stand: Woche 3 – in Arbeit.** Aktuell entsteht das Flask-Grundgerüst mit
+`create_app()`, WSGI-Einstiegspunkt und `/health`. Danach folgen erste Tests
+und die Ausgabenfunktionen. 
 
 ## Geplanter Funktionsumfang (MVP)
 
@@ -36,17 +36,20 @@ git clone https://github.com/nachbaisabel/devops-ausgabenverwaltung.git
 cd devops-ausgabenverwaltung
 ```
 
-Wer das Repository bereits geklont hat, verwendet seinen vorhandenen Projektordner.
-
 ### Anwendung starten
 
-Die ausführbaren Installations-, Start- und Testbefehle folgen in **Woche 3**,
-zusammen mit der Anwendung und ihren Abhängigkeiten. Lokal ist ein Start ohne
-Datenbank mit In-Memory-Speicher vorgesehen; dessen Daten gehen beim Beenden
-verloren. Der geplante App-Port ist **8000**.
+Das Grundgerüst wird gerade eingerichtet. Sobald `requirements.txt`,
+`app/__init__.py` und `wsgi.py` vorhanden sind, erfolgt der lokale Start so:
 
-Der Compose-Schnellstart mit Anwendung und Postgres folgt in **Woche 4**.
-Aktuell sind noch keine Startbefehle für eine lauffähige Anwendung vorhanden.
+```bash
+conda activate devops-ausgabenverwaltung
+python -m pip install -r requirements.txt
+python wsgi.py
+```
+
+Prüfaufruf: `http://127.0.0.1:8000/health`; erwartet wird `{"status": "ok"}`.
+Der erste Test für diesen Endpunkt folgt als nächster Schritt.
+Docker Compose und Postgres folgen in Woche 4.
 
 ## Endpunkte
 
@@ -61,8 +64,7 @@ Implementierung verbindlich festgelegt.
 | `GET` | `/metrics` | Metriken im Prometheus-Format |
 | `GET` | `/api/expenses` | Gespeicherte Ausgaben auflisten |
 | `POST` | `/api/expenses` | Ausgabe mit Betrag, Kategorie und Datum erfassen |
-| `GET` | `/api/expenses/summary/categories` | Summen nach Kategorie auswerten |
-| `GET` | `/api/expenses/summary/months` | Summen nach Monat auswerten |
+
 
 ## Konfiguration
 
@@ -116,10 +118,12 @@ Zugangsdaten werden nicht im Repository gespeichert.
 
 **Eingesetzte KI-Werkzeuge:** Codex zur Erklärung und Zusammenfassung der
 Kursunterlagen, zur Lernplanung sowie als Formulierungshilfe und zur Anpassung
-von `README.md` und `CONTRIBUTING.md`. Weitere Einsätze werden hier ergänzt.
+von `README.md` und `CONTRIBUTING.md`. In Woche 3 unterstützt Codex beim
+Flask-Grundgerüst und erklärt die einzelnen Schritte.
 
 **Vorlage:** Die README-Struktur stammt aus
 `woche-10-abschlussprojekt/code/projekt-vorlage/README.md` der CDS212-Kursunterlagen.
+Der WSGI-Einstiegspunkt wird aus `beispiel-app/wsgi.py` übernommen.
 
 ## Lizenz
 
