@@ -1,0 +1,5 @@
+-r requirements.txt
+pytest
+
+## conda activate devops-ausgabenverwaltung
+## python -m pip install -r requirements-dev.txt
