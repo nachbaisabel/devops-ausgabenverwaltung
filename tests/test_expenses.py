@@ -122,10 +122,8 @@ def test_no_update_after_invalid_request(client, expense_data):
 
 
 # to run the tests
-'''
-conda activate devops-ausgabenverwaltung
-python -m pytest tests/test_expenses.py -v
-'''
+# python -m pytest tests/test_expenses.py -v
+
 
 # expected output:
 # 13 passed

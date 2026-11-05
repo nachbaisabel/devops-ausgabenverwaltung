@@ -27,7 +27,7 @@ zum MVP. Weitere fachliche Funktionen werden zunächst zurückgestellt.
 ### Voraussetzungen
 
 - Git und Zugriff auf GitHub über HTTPS.
-- Python 3.12; lokal verwende ich dafür Conda.
+- Python ab 3.12; lokal verwende ich Python 3.13 mit einer `.venv`.
 - Ab Woche 4: Docker und Docker Compose.
 
 ### Repository herunterladen
@@ -39,19 +39,23 @@ cd devops-ausgabenverwaltung
 
 ### Anwendung starten
 
-Lokaler Start mit dem vorhandenen Conda-Environment:
+Beim ersten Einrichten im Projektordner eine virtuelle Umgebung erstellen:
 
 ```bash
-conda activate devops-ausgabenverwaltung
-python -m pip install -r requirements.txt
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements-dev.txt
 python wsgi.py
 ```
 
 Prüfaufruf: `http://127.0.0.1:8000/health`; erwartet wird `{"status": "ok"}`.
-Tests in einem separaten Terminal mit aktivem Projekt-Environment ausführen:
+Die Umgebung in jedem neuen Terminal mit `source .venv/bin/activate` aktivieren.
+Mit `deactivate` wird sie wieder verlassen. `.venv` wird nicht in Git gespeichert.
+
+Tests in einem separaten Terminal ausführen:
 
 ```bash
-python -m pip install -r requirements-dev.txt
+source .venv/bin/activate
 python -m pytest tests/ -v
 ```
 

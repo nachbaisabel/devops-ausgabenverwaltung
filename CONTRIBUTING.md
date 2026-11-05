@@ -89,7 +89,7 @@ Markdown-Vorschau; Anwendungstests sind dafür normalerweise nicht nötig.
 CI-Workflows eingerichtet. Das ist kein bestandener Testlauf.
 
 **Ab Woche 3:** Sobald Anwendung und Entwicklungsabhängigkeiten vorhanden sind,
-führe ich die eingerichteten Prüfungen in der aktiven Python-3.12-Umgebung aus:
+führe ich die eingerichteten Prüfungen in der aktiven `.venv` (Python ab 3.12) aus:
 
 ```bash
 ruff check .
