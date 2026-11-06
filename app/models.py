@@ -1,13 +1,15 @@
 from dataclasses import dataclass
 from typing import Any
+from decimal import Decimal, InvalidOperation
+from datetime import date as Date
 
 # defines what an expense includes
 @dataclass
 class Expense:
     id: int
     title: str
-    amount: float
-    date: str # YYYY-MM-DD
+    amount: Decimal
+    date: Date
     category: str
     description: str = ""
 
@@ -15,8 +17,8 @@ class Expense:
         return {
             "id": self.id,
             "title": self.title,
-            "amount": self.amount,
-            "date": self.date,
+            "amount": format(self.amount, ".2f"), # consistent format e.g. 12.5 -> 12.50
+            "date": self.date.isoformat(),
             "category": self.category,
             "description": self.description,
         }
@@ -41,25 +43,32 @@ def validate_title(raw: Any) -> str:
         raise ValidationError("Title cannot exceed 200 characters.")
     return title
 
-def validate_amount(raw: Any) -> float:
-    if not isinstance(raw, (int, float)):
-        raise ValidationError("Amount must be a number.")
-    amount = float(raw)
-    if not amount > 0:
+def validate_amount(raw: Any) -> Decimal:
+    if not isinstance(raw, str):
+        raise ValidationError('Amount must be a decimal string, e.g. "18.55".')  
+    try:
+        amount = Decimal(raw)
+    except InvalidOperation:
+        raise ValidationError("Amount must be a valid decimal number.") from None
+    if not amount.is_finite():
+        raise ValidationError("Amount must be finite.")
+    if amount <= 0:
         raise ValidationError("Amount must be greater than zero.")
+    # max. of decimal places
+    if amount.as_tuple().exponent < -2:
+        raise ValidationError("Amount must have at most two decimal places.")
     return amount
 
-def validate_date(raw: Any) -> str:
+def validate_date(raw: Any) -> Date:
     if not isinstance(raw, str):
         raise ValidationError("Date must be a string in YYYY-MM-DD format.")
-    # Basic validation for date format (YYYY-MM-DD)
-    parts = raw.split("-")
-    if len(parts) != 3 or not all(part.isdigit() for part in parts):
+    try: 
+        parsed = Date.fromisoformat(raw)
+    except ValueError:
+        raise ValidationError("Date must be a valid date in YYYY-MM-DD format.") from None
+    if parsed.isoformat() != raw:
         raise ValidationError("Date must be in YYYY-MM-DD format.")
-    year, month, day = map(int, parts)
-    if not (1 <= month <= 12 and 1 <= day <= 31):
-        raise ValidationError("Invalid month or day in date.")
-    return raw
+    return parsed
 
 def validate_description(raw: Any) -> str:
     if raw is None:

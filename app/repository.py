@@ -1,3 +1,5 @@
+from decimal import Decimal 
+from datetime import date as Date
 # from __future__ import annotations
 
 import logging
@@ -36,7 +38,7 @@ class InMemoryExpenseRepository:
         with self._lock:
             return self._expenses.get(expense_id)
 
-    def add(self, title: str, amount: float, date: str, category: str, description: str = "") -> Expense:
+    def add(self, title: str, amount: Decimal, date: Date, category: str, description: str = "") -> Expense:
         with self._lock:
             expense = Expense(
                 id=self._next_id,
@@ -50,7 +52,7 @@ class InMemoryExpenseRepository:
             self._next_id += 1
             return expense
 
-    def update(self, expense_id: int, title: str, amount: float, date: str, category: str, description: str = "") -> Expense | None:
+    def update(self, expense_id: int, title: str, amount: Decimal, date: Date, category: str, description: str = "") -> Expense | None:
         with self._lock:
             if expense_id not in self._expenses:
                 return None
@@ -73,8 +75,94 @@ class InMemoryExpenseRepository:
         return True
 
 
-#class PostgresExpenseRepository:
+class PostgresExpenseRepository:
     """Postgres backend, used from week 4 onwards via Docker Compose."""
+
+    # provides database connections
+    def __init__(self, dsn: str) -> None:
+        import psycopg
+        from psycopg_pool import ConnectionPool
+
+        self._psycopg = psycopg
+        self._pool = ConnectionPool(dsn, min_size=1, max_size=5, open=True)
+        self._create_schema()
+
+    # to create SQL-table expenses
+    def _create_schema(self) -> None:
+        with self._pool.connection() as conn:
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS expenses (
+                    id    SERIAL PRIMARY KEY,
+                    title TEXT NOT NULL,
+                    amount NUMERIC(12,2) NOT NULL, -- money with two decimal places
+                    date DATE NOT NULL,
+                    category  TEXT NOT NULL,
+                    description TEXT NOT NULL DEFAULT ''
+                )
+                """
+            )
+
+    # to read saved expenses out of the table
+    def list(self) -> list[Expense]:
+        with self._pool.connection() as conn:
+            rows = conn.execute("SELECT id, title, amount, date, category, description FROM expenses ORDER BY id").fetchall()
+        return [Expense(*row) for row in rows]
+
+    # to add a expense to the table
+    def add(self, title: str, amount: Decimal, date: Date, category: str, description: str = "") -> Expense:
+        with self._pool.connection() as conn:
+            row = conn.execute(
+                "INSERT INTO expenses (title, amount, date, category, description) "
+                "VALUES (%s, %s, %s, %s, %s) "
+                "RETURNING id, title, amount, date, category, description",
+                (title, amount, date, category, description),
+            ).fetchone()
+        return Expense(*row)
+
+    # to get a expense by id from the table
+    def get(self, expense_id: int) -> Expense | None:
+        with self._pool.connection() as conn:
+            row = conn.execute(
+                "SELECT id, title, amount, date, category, description "
+                "FROM expenses "
+                "WHERE id = %s", (expense_id,)
+            ).fetchone()
+        return Expense(*row) if row else None
+
+    # to update a expense by id in the table
+    def update(self, expense_id: int, title: str, amount: Decimal, date: Date, category: str, description: str = "") -> Expense | None:
+        with self._pool.connection() as conn:
+            row = conn.execute(
+                "UPDATE expenses "
+                "SET title = %s, amount = %s, date = %s, category = %s, description = %s "
+                "WHERE id = %s "
+                "RETURNING id, title, amount, date, category, description",
+                (title, amount, date, category, description, expense_id),
+            ).fetchone()
+        return Expense(*row) if row else None
+    
+    # to delete a expense by id in the table
+    def delete(self, expense_id: int) -> bool:
+        with self._pool.connection() as conn:
+            result = conn.execute(
+                "DELETE FROM expenses "
+                "WHERE id = %s", 
+                (expense_id,))
+        return result.rowcount > 0
+
+    # to check if the database is available
+    def healthy(self) -> bool:
+        try:
+            with self._pool.connection() as conn:
+                conn.execute("SELECT 1")
+            return True
+        except Exception:
+            log.exception("database health check failed")
+            return False
+
+    
+                
 
 
 
