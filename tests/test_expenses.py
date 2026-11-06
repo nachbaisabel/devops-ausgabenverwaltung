@@ -5,7 +5,7 @@ import pytest
 def expense_data():
     return {
         "title": "groceries",
-        "amount": 14.5,
+        "amount": "14.50",
         "date": "2026-08-15",
         "category": "Food",
         "description": "dinner",
@@ -25,7 +25,7 @@ def test_create_expense(client, expense_data):
     body = response.get_json()
 
     assert body["title"] == "groceries"
-    assert body["amount"] == 14.5
+    assert body["amount"] == "14.50"
     assert body["date"] == "2026-08-15"
     assert body["category"] == "Food"
     assert body["description"] == "dinner"
@@ -63,7 +63,7 @@ def test_description_is_optional(client, expense_data):
 def test_update_expense(client, expense_data):
     created = client.post("/api/expenses", json=expense_data).get_json()
 
-    expense_data["amount"] = 9.80
+    expense_data["amount"] = "9.80"
     response = client.put(f"/api/expenses/{created['id']}", json=expense_data)
 
     expected = {**expense_data, "id": created["id"]}
@@ -114,7 +114,7 @@ def test_body_must_be_object(client):
 def test_no_update_after_invalid_request(client, expense_data):
     created = client.post("/api/expenses", json=expense_data).get_json()
 
-    expense_data["amount"] = "13.8"
+    expense_data["amount"] = "13.5643"
     response = client.put(f"/api/expenses/{created['id']}", json=expense_data)
 
     assert response.status_code == 400
