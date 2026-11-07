@@ -2,6 +2,7 @@ import pytest
 
 from app import create_app
 
+
 # fixture to create a test client for the Flask application
 @pytest.fixture
 def client():

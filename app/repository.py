@@ -1,14 +1,12 @@
-from decimal import Decimal 
-from datetime import date as Date
 # from __future__ import annotations
-
 import logging
 import threading
-# from typing import Protocol
+from datetime import date as Date
+from decimal import Decimal
 
+# from typing import Protocol
 # from app.config import Config
 from app.models import Expense
-
 
 # ! structure of file is inspired by beispiel-app/repository.py
 
@@ -27,8 +25,10 @@ class InMemoryExpenseRepository:
     # define methods for repository class, which will be used in routes.py to access the data
     def __init__(self) -> None:
         self._expenses: dict[int, Expense] = {}
-        self._next_id = 1 # next id to assign to a new expense
-        self._lock = threading.Lock() # lock if multiple threads access the repository concurrently
+        self._next_id = 1  # next id to assign to a new expense
+        self._lock = (
+            threading.Lock()
+        )  # lock if multiple threads access the repository concurrently
 
     def list(self) -> list[Expense]:
         with self._lock:
@@ -38,7 +38,14 @@ class InMemoryExpenseRepository:
         with self._lock:
             return self._expenses.get(expense_id)
 
-    def add(self, title: str, amount: Decimal, date: Date, category: str, description: str = "") -> Expense:
+    def add(
+        self,
+        title: str,
+        amount: Decimal,
+        date: Date,
+        category: str,
+        description: str = "",
+    ) -> Expense:
         with self._lock:
             expense = Expense(
                 id=self._next_id,
@@ -46,13 +53,21 @@ class InMemoryExpenseRepository:
                 amount=amount,
                 date=date,
                 category=category,
-                description=description
+                description=description,
             )
             self._expenses[self._next_id] = expense
             self._next_id += 1
             return expense
 
-    def update(self, expense_id: int, title: str, amount: Decimal, date: Date, category: str, description: str = "") -> Expense | None:
+    def update(
+        self,
+        expense_id: int,
+        title: str,
+        amount: Decimal,
+        date: Date,
+        category: str,
+        description: str = "",
+    ) -> Expense | None:
         with self._lock:
             if expense_id not in self._expenses:
                 return None
@@ -62,7 +77,7 @@ class InMemoryExpenseRepository:
                 amount=amount,
                 date=date,
                 category=category,
-                description=description
+                description=description,
             )
             self._expenses[expense_id] = expense
             return expense
@@ -106,11 +121,20 @@ class PostgresExpenseRepository:
     # to read saved expenses out of the table
     def list(self) -> list[Expense]:
         with self._pool.connection() as conn:
-            rows = conn.execute("SELECT id, title, amount, date, category, description FROM expenses ORDER BY id").fetchall()
+            rows = conn.execute(
+                "SELECT id, title, amount, date, category, description FROM expenses ORDER BY id"
+            ).fetchall()
         return [Expense(*row) for row in rows]
 
     # to add a expense to the table
-    def add(self, title: str, amount: Decimal, date: Date, category: str, description: str = "") -> Expense:
+    def add(
+        self,
+        title: str,
+        amount: Decimal,
+        date: Date,
+        category: str,
+        description: str = "",
+    ) -> Expense:
         with self._pool.connection() as conn:
             row = conn.execute(
                 "INSERT INTO expenses (title, amount, date, category, description) "
@@ -126,12 +150,21 @@ class PostgresExpenseRepository:
             row = conn.execute(
                 "SELECT id, title, amount, date, category, description "
                 "FROM expenses "
-                "WHERE id = %s", (expense_id,)
+                "WHERE id = %s",
+                (expense_id,),
             ).fetchone()
         return Expense(*row) if row else None
 
     # to update a expense by id in the table
-    def update(self, expense_id: int, title: str, amount: Decimal, date: Date, category: str, description: str = "") -> Expense | None:
+    def update(
+        self,
+        expense_id: int,
+        title: str,
+        amount: Decimal,
+        date: Date,
+        category: str,
+        description: str = "",
+    ) -> Expense | None:
         with self._pool.connection() as conn:
             row = conn.execute(
                 "UPDATE expenses "
@@ -141,14 +174,11 @@ class PostgresExpenseRepository:
                 (title, amount, date, category, description, expense_id),
             ).fetchone()
         return Expense(*row) if row else None
-    
+
     # to delete a expense by id in the table
     def delete(self, expense_id: int) -> bool:
         with self._pool.connection() as conn:
-            result = conn.execute(
-                "DELETE FROM expenses "
-                "WHERE id = %s", 
-                (expense_id,))
+            result = conn.execute("DELETE FROM expenses WHERE id = %s", (expense_id,))
         return result.rowcount > 0
 
     # to check if the database is available
@@ -160,10 +190,6 @@ class PostgresExpenseRepository:
         except Exception:
             log.exception("database health check failed")
             return False
-
-    
-                
-
 
 
 # def create_repository(config: Config) -> ExpenseRepository:

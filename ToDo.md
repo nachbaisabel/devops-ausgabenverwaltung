@@ -15,7 +15,7 @@ Mein Kurs: **CDS212 – DevOps** · Mein Projekt: **Ausgabenverwaltung**
 - [ ] Woche 9
 - [ ] Woche 10
 
-**Currently: Woche 4**
+**Currently: Woche 5**
 
 ## Hausübungen & Lernmaterialien
 
@@ -238,3 +238,120 @@ mit `-v` wurde für diese Projektprüfung nicht ausgeführt.
 - **Unprivilegierter Benutzer:** Gunicorn läuft als `appuser` statt root; das begrenzt die Rechte bei einem Angriff.
 - **Kein pip-Cache:** `--no-cache-dir` vermeidet zusätzliche Download-Dateien im Image.
 - **Grössenvergleich:** Naives Image ca. **1,05 GB**, optimiertes Image ca. **230 MB**. Rechnerische Einsparung ca. **820 MB bzw. 78 %** (1 GB = 1000 MB).
+
+--
+## Woche 5 – Continuous Integration
+
+- [x] Issue und Branch `ci/add-quality-gates` für die CI einrichten
+- [x] Ruff und pytest-cov in den Entwicklungsabhängigkeiten ergänzen
+- [x] Lint und Formatierung lokal bereinigen
+- [x] Validierungstests ergänzen; 45 Tests bestanden
+- [x] Coverage-Gate mit mindestens 80 % konfigurieren; lokal 82,56 % erreicht
+- [x] Workflow mit Lint, Formatprüfung, Testmatrix, Docker-Build und Smoke-Test vorbereiten
+- [ ] Erfolgreiche CI-Läufe für alle Jobs auf GitHub prüfen
+- [ ] Erforderliche Status-Checks im Branch-Schutz von `main` festlegen
+- [ ] Absichtlichen Fehler im PR nachweisen: rot und Merge gesperrt, danach korrigiert und grün
+- [ ] Rote und grüne Checks mit Screenshots und PR-Link dokumentieren
+- [ ] CI-Badge in der README ergänzen und PR mergen
+
+### 1 – Werkzeuge installieren und Ausgangszustand prüfen
+
+- virtuelle Umgebung aktivieren
+- `requirements-dev.txt` mit `ruff` und `pytest-cov` ergänzt
+
+```bash
+source .venv/bin/activate
+python -m pip install -r requirements-dev.txt
+python -m ruff check .
+python -m ruff format --check .
+python -m pytest --cov=app --cov-report=term-missing
+```
+
+**Ergebnis:** 
+- 14 passed, Total coverage: 75 %
+- ruff meldet: unsortierte Imports und unbenutzter Import, 7 zu formatierende Dateien
+
+### 2 – Lint und Formatierung bereinigen
+
+```bash
+python -m ruff check . --fix
+python -m ruff format .
+```
+- erste Korrekturlauf behebt 7 von 8 Lint-Befunden, 1 Fehler wird behoben
+- anschliessend erneut prüfen und den Diff kontrollieren:
+
+```bash
+python -m ruff check .
+python -m ruff format --check .
+git diff
+```
+
+**Ergebnis:** `All checks passed!`, elf Dateien bereits formatiert
+
+### 3 – Validierungen direkt testen
+
+- neue Datei: `tests/test_models.py` --> Tests rufen die Validierungsfunktionen
+direkt auf
+- `pytest.mark.parametrize` führt dieselbe Funktion für jeden Eingabewert aus
+- `pytest.raises(ValidationError)` erwartet die Ablehnung einer ungültigen Eingabe
+
+```bash
+python -m pytest tests/test_models.py -v
+python -m pytest --cov=app --cov-report=term-missing
+```
+**Ergebnis:** Total coverage: 82.56%, 45 passed
+
+
+### 4 – Coverage-Gate konfigurieren
+
+`pyproject.toml` liefert unter 80 % einen Fehlerstatus:
+
+```toml
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+```
+
+```bash
+python -m ruff check .
+python -m ruff format --check .
+python -m pytest --cov=app --cov-report=term-missing
+```
+
+**Bestätigtes Ergebnis:** Lint grün, zwölf Dateien formatiert, 45 Tests bestanden,
+`Required test coverage of 80.0% reached. Total coverage: 82.56%`.
+
+### 5 – GitHub-Actions-Workflow vorbereiten
+
+Datei: `.github/workflows/ci.yml` im Repository-Hauptordner, angelehnt an den
+Kurs-Workflow.
+
+- Trigger: Push auf `main`, Pull Requests und manueller Start
+- Lint: `ruff check .` und `ruff format --check .`
+- Tests: Python 3.12 und 3.13, pytest mit Coverage-Gate
+- Pip-Cache: Schlüssel berücksichtigt `requirements.txt` und `requirements-dev.txt`
+- Build: wartet mit `needs: [lint, test]` auf erfolgreiche Prüfungen
+- Docker-Image: `expenses:ci`; Smoke-Test ruft `/health` auf
+- Ohne `DATABASE_URL` verwendet der Smoke-Test bewusst In-Memory
+
+Lokale Abschlussprüfung:
+
+```bash
+python -m ruff check .
+python -m ruff format --check .
+python -m pytest --cov=app --cov-report=term-missing
+```
+**Zuletzt dokumentierter lokaler Stand:** Total coverage: 82.56%, 45 passed
+
+
+### 6 – Noch ausstehend: CI und Merge-Schutz nachweisen
+
+1. Änderungen prüfen, committen und `ci/add-quality-gates` pushen
+2. PR nach `main` öffnen; Lint, beide Testjobs und Build/Smoke-Test grün bestätigen
+3. Die tatsächlichen Check-Namen als erforderliche Status-Checks für `main` auswählen
+4. Einen absichtlichen Lint-/Formatfehler pushen; roten Check und gesperrten Merge sichern
+5. Fehler beheben und pushen; grüne Checks sichern
+6. Badge und Nachweise ergänzen, PR prüfen und mergen
+
+Vorhandene PR-Pflicht und fehlenden Admin-Bypass beibehalten. Ein Badge zeigt
+den Status nur an; erst die erforderlichen Checks im Branch-Schutz sperren den Merge.

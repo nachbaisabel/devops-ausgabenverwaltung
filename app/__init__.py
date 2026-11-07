@@ -1,7 +1,9 @@
 import os
 
-from flask import Flask, jsonify
+from flask import Flask
+
 from app.repository import InMemoryExpenseRepository, PostgresExpenseRepository
+
 
 def create_app():
     # Create and configure the Flask application
@@ -17,6 +19,7 @@ def create_app():
 
     # Register the blueprint for the main routes
     from app.routes import bp as main_bp
+
     app.register_blueprint(main_bp)
 
     return app
