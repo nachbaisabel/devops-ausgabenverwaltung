@@ -65,7 +65,7 @@ jobs:
         run: pip install -r requirements-dev.txt
 
       - name: Run tests with coverage gate
-        run: pytest --cov=app --cov-report=term-missing
+        run: python -m pytest --cov=app --cov-report=term-missing
         
   build:
     name: Build image

@@ -343,6 +343,9 @@ python -m pytest --cov=app --cov-report=term-missing
 ```
 **Zuletzt dokumentierter lokaler Stand:** Total coverage: 82.56%, 45 passed
 
+### 6 - CI nachweisen
+- auf Github Pull-Request erstellen
+- 
 
 ### 6 – Noch ausstehend: CI und Merge-Schutz nachweisen
 
