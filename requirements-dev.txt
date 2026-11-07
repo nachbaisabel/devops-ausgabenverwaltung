@@ -1,2 +1,6 @@
 -r requirements.txt
 pytest
+pytest-cov
+ruff
+
+# python -m pip install -r requirements-dev.txt

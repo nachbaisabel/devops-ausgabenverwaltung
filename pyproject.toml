@@ -1,0 +1,6 @@
+# file structure copied from beispiel-app/
+
+[tool.coverage.report]
+# The CI pipeline (week 5) fails the build when coverage drops below this.
+fail_under = 80
+show_missing = true
