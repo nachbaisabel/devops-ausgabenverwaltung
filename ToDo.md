@@ -8,14 +8,14 @@ Mein Kurs: **CDS212 – DevOps** · Mein Projekt: **Ausgabenverwaltung**
 - [x] Woche 2
 - [x] Woche 3
 - [x] Woche 4
-- [ ] Woche 5
+- [x] Woche 5
 - [ ] Woche 6
 - [ ] Woche 7
 - [ ] Woche 8
 - [ ] Woche 9
 - [ ] Woche 10
 
-**Currently: Woche 5**
+**Currently: Woche 6**
 
 ## Hausübungen & Lernmaterialien
 
@@ -341,7 +341,7 @@ python -m ruff check .
 python -m ruff format --check .
 python -m pytest --cov=app --cov-report=term-missing
 ```
-**Zuletzt dokumentierter lokaler Stand:** Total coverage: 82.56%, 45 passed
+**Ergebnis:** Total coverage: 82.56%, 45 passed
 
 ### 6 - CI nachweisen
 - auf Github Pull-Request erstellen
@@ -365,12 +365,13 @@ roten Check und gesperrten Merge sichern
 - Button `Merge pull request` nicht klickbar: "Merging is blocked due to failing merge requirements"
 
 ### 9 - Badge in README ergänzen
+[![CI](https://github.com/nachbaisabel/devops-ausgabenverwaltung/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nachbaisabel/devops-ausgabenverwaltung/actions/workflows/ci.yml)
 
 
-### Noch ausstehend: 
+### 10 - finaler Check der CI-Jobs
+```bash
+source .venv/bin/activate
+ruff check . && ruff format --check . && python -m pytest --cov=app --cov-report=term-missing
+```
 
-
-6. Badge und Nachweise ergänzen, PR prüfen und mergen
-
-Vorhandene PR-Pflicht und fehlenden Admin-Bypass beibehalten. Ein Badge zeigt
-den Status nur an; erst die erforderlichen Checks im Branch-Schutz sperren den Merge.
+**Zuletzt dokumentierter lokaler Stand:** Total coverage: 82.56%, 45 passed
