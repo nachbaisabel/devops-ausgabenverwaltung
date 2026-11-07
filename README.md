@@ -1,5 +1,7 @@
 # DevOps Ausgabenverwaltung
 
+[![CI](https://github.com/nachbaisabel/devops-ausgabenverwaltung/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nachbaisabel/devops-ausgabenverwaltung/actions/workflows/ci.yml)
+
 Eine Webanwendung für Privatpersonen, um Ausgaben mit Betrag, Kategorie und
 Datum zu erfassen und nach Monat und Kategorie auszuwerten.
 
