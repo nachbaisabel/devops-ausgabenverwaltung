@@ -345,12 +345,24 @@ python -m pytest --cov=app --cov-report=term-missing
 
 ### 6 - CI nachweisen
 - auf Github Pull-Request erstellen
-- 
+- Python Checks fehlgeschlagen, Testbefehl anpassen: "run: python -m pytest --cov=app --cov-report=term-missing"
+- alle 4 Checks grün --> Lint (ruff), Test (Python 3.12/13), Build image
 
-### 6 – Noch ausstehend: CI und Merge-Schutz nachweisen
+### 7 - Merge-Schutz nachweisen
+Branch protection rules für `main` in GitHub vollständig einrichten
+- Require a pull request before merging
+- Require status checks to pass before merging
+- Require branches to be up to date before merging
+  - Lint (ruff)
+  - Test (Python 3.12)
+  - Test (Python 3.13)
+  - Build image
+- Do not allow bypassing the above settings (= admin rights)
 
-1. Änderungen prüfen, committen und `ci/add-quality-gates` pushen
-2. PR nach `main` öffnen; Lint, beide Testjobs und Build/Smoke-Test grün bestätigen
+
+
+### Noch ausstehend: 
+
 3. Die tatsächlichen Check-Namen als erforderliche Status-Checks für `main` auswählen
 4. Einen absichtlichen Lint-/Formatfehler pushen; roten Check und gesperrten Merge sichern
 5. Fehler beheben und pushen; grüne Checks sichern

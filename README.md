@@ -220,8 +220,19 @@ Für `main` ist eine Branch Protection Rule eingerichtet: Änderungen erfolgen
 über Feature-Branches und Pull Requests; direkte Pushes sind auch für mich als
 Administrator gesperrt. Force-Pushes und das Löschen von `main` sind deaktiviert.
 
-Das Projekt ist eine Einzelarbeit. Eine schriftliche Selbstprüfung im PR ersetzt
-fremde Review-Freigaben. Verpflichtende CI-Checks werden in Woche 5 ergänzt.
+Mit den folgenden Einstellungen wird sichergestellt, dass kein fehlerhafter Code in den Hauptzweig gelangt:
+- **Require a pull request before merging** – kein direkter Push auf `main`;
+  Änderungen laufen über einen PR.
+- **Require status checks to pass before merging** – benannte Checks müssen grün sein, sonst ist der Merge-Knopf gesperrt:
+  - Lint (ruff)
+  - Test (Python 3.12)
+  - Test (Python 3.13)
+  - Build image
+- **Require branches to be up to date before merging** – der PR muss den aktuellen
+  Stand von `main` enthalten, damit nicht zwei einzeln grüne Änderungen zusammen
+  rot ergeben.
+- **Do not allow bypassing the above settings** - Branch Rules dürfen nur von mir geändert werden.
+
 
 ### GitHub-Zugriff
 
