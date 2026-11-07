@@ -359,13 +359,17 @@ Branch protection rules für `main` in GitHub vollständig einrichten
   - Build image
 - Do not allow bypassing the above settings (= admin rights)
 
+### 8 - absichtlichen Lint-/Formatfehler pushen
+roten Check und gesperrten Merge sichern
+- Fehler in `ci.yml` eingebaut, Lint Check failed
+- Button `Merge pull request` nicht klickbar: "Merging is blocked due to failing merge requirements"
+
+### 9 - Badge in README ergänzen
 
 
 ### Noch ausstehend: 
 
-3. Die tatsächlichen Check-Namen als erforderliche Status-Checks für `main` auswählen
-4. Einen absichtlichen Lint-/Formatfehler pushen; roten Check und gesperrten Merge sichern
-5. Fehler beheben und pushen; grüne Checks sichern
+
 6. Badge und Nachweise ergänzen, PR prüfen und mergen
 
 Vorhandene PR-Pflicht und fehlenden Admin-Bypass beibehalten. Ein Badge zeigt

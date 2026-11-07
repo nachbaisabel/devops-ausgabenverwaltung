@@ -38,7 +38,7 @@ jobs:
         run: pip install -r requirements-dev.txt
 
       - name: Check style and import order
-        run: ruff fehler check .
+        run: ruff check .
       
       - name: Check formatting # checks consistent appearance in code, e.g. spaces, indentation, quotation marks, line breaks
         run: ruff format --check .
