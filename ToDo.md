@@ -318,8 +318,7 @@ python -m ruff format --check .
 python -m pytest --cov=app --cov-report=term-missing
 ```
 
-**Bestätigtes Ergebnis:** Lint grün, zwölf Dateien formatiert, 45 Tests bestanden,
-`Required test coverage of 80.0% reached. Total coverage: 82.56%`.
+**Ergebnis:** All checks passed! · 45 passed · Total coverage: 82.56%
 
 ### 5 – GitHub-Actions-Workflow vorbereiten
 
@@ -375,3 +374,43 @@ ruff check . && ruff format --check . && python -m pytest --cov=app --cov-report
 ```
 
 **Zuletzt dokumentierter lokaler Stand:** Total coverage: 82.56%, 45 passed
+
+
+---
+## Woche 6 – Continuous Deployment
+
+- [x] `render.yaml` im Repo-Hauptordner anpassen: Service-Name, `./Dockerfile`, Build-Kontext `.`
+- [ ] Render-Service für die Ausgabenverwaltung erstellen und Repository verbinden mit Blueprint-Import
+    - Name: expense tracking
+- [ ] Speicher für Render festlegen: In-Memory oder erreichbares Postgres; Compose-Datenbank läuft nicht automatisch auf Render
+- [ ] Variablen setzen: `PORT`, `GUNICORN_WORKERS`, `APP_VERSION`, `LOG_LEVEL`; `DATABASE_URL` nur bei Cloud-Datenbank
+- [ ] Konfiguration im Python-Code prüfen: `APP_VERSION` in `/health`, `LOG_LEVEL` auswerten; `config.py` optional als zentrale Ablage
+- [ ] `/ready` passend zum Repository ergänzen und testen; Render-Healthcheck bleibt `/health`
+- [ ] `.env.example` mit Variablennamen und unkritischen Beispielwerten anlegen; `.env` bleibt aus Git ausgeschlossen
+- [ ] Erstes Deployment prüfen: öffentliche Render-URL, `/health`, API und Logs
+- [ ] `smoke-test.sh` auf Ausgaben-Endpunkte und Dezimalstrings anpassen; gegen Render ausführen
+- [ ] `.github/workflows/cd.yml` einrichten: Deployment nur nach erfolgreicher CI auf `main`
+- [ ] GitHub konfigurieren: Render-Deploy-Hook als Secret, `APP_URL` als Variable; unbedingte Render-Autodeploys abschalten
+- [ ] Grünen CD-Workflow und erfolgreichen Smoke-Test nachweisen
+- [ ] Cold Start beobachten und Rollback samt Erfolgskontrolle durchführen
+- [ ] `DEPLOYMENT.md` schreiben: A Voraussetzungen, B lokale Installation, C Variablen, D Deployment, E Verifikation, F Rollback, G mindestens vier Fehlerbilder, H Kontakt/Eskalation
+- [ ] Render-URL mit sichtbarer URL festhalten; README aktualisieren
+- [ ] Runbook anhand der eigenen Anleitung durchgehen; Tests und CI grün, PR prüfen und mergen
+
+### Entscheidungen
+
+- **Gunicorn:** zunächst ein Worker; bei In-Memory notwendig, mit Postgres sind mehrere möglich, aber keine Pflicht
+- **Port:** Container lauscht aktuell auf 8000; Render passend konfigurieren, Host-Port 8002 betrifft nur lokales Compose
+- **Feature Flags:** optional, aktuell keine erforderlich
+- **`config.py`:** keine Pflicht; Umgebungsvariablen müssen im Code tatsächlich ausgewertet werden
+- **`DATABASE_URL`:** Zugangsdaten nur in Render/GitHub-Secrets, keine echten Werte in `.env.example`
+
+
+### Render 
+- `render.yaml` im Repo-Hauptordner anpassen: Service-Name, `./Dockerfile`, Build-Kontext `.`
+- Render-Service für die Ausgabenverwaltung erstellen und Repository verbinden mit Blueprint-Import
+- Website
+
+### Smoke-Test 
+
+./scripts/smoke-test.sh https://taskboard-w8aq.onrender.com

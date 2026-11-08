@@ -233,7 +233,8 @@ Mit den folgenden Einstellungen wird sichergestellt, dass kein fehlerhafter Code
 - **Require branches to be up to date before merging** – der PR muss den aktuellen
   Stand von `main` enthalten, damit nicht zwei einzeln grüne Änderungen zusammen
   rot ergeben.
-- **Do not allow bypassing the above settings** - Branch Rules dürfen nur von mir geändert werden.
+- **Do not allow bypassing the above settings** – die Branch-Regeln gelten auch für mich als Administrator; kein Umgehen der PR-Pflicht oder erforderlichen Checks
+- Force-Pushes und Löschen von `main` bleiben deaktiviert.
 
 
 ### GitHub-Zugriff

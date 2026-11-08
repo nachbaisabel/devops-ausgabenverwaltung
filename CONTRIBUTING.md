@@ -20,6 +20,16 @@ verwende ich nicht.
 Issues verwende ich bei Bedarf zur Aufgabenplanung. Ein PR kann ein zugehöriges
 Issue mit `Closes #<nummer>` beim Merge automatisch schliessen.
 
+### Branch-Schutz für `main`
+
+- **Require a pull request before merging:** Änderungen nur über PRs, keine direkten Pushes.
+- **Require status checks to pass before merging:** `Lint (ruff)`, `Test (Python 3.12)`, `Test (Python 3.13)` und `Build image` müssen grün sein.
+- **Require branches to be up to date before merging:** PR-Branch vor dem Merge auf den aktuellen Stand von `main` bringen.
+- **Do not allow bypassing the above settings:** Die Regeln gelten auch für mich als Administrator; kein Bypass.
+- Force-Pushes und Löschen von `main` bleiben deaktiviert.
+
+Grüne Checks bestätigen die eingerichteten Prüfungen; sie garantieren keine vollständige Fehlerfreiheit.
+
 ### Branch-Namen
 
 Englisch, Kleinbuchstaben und Bindestriche: `<typ>/<kurzbeschreibung>`.
