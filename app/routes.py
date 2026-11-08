@@ -34,6 +34,7 @@ def health():
     """
     return jsonify(status="ok")
 
+
 # checks whether app can serve request and dependencies such as database
 @bp.get("/ready")
 def ready():
@@ -41,6 +42,7 @@ def ready():
     if _repo().healthy():
         return jsonify(status="ready")
     return jsonify(status="unavailable"), 503
+
 
 # endpoint to get expenses
 @bp.get("/api/expenses")
