@@ -470,18 +470,37 @@ bash scripts/smoke-test.sh http://127.0.0.1:8000
 ```
 **Ergebnis:** SMOKE TEST PASSED
 
-2) Änderungen auf Main pushen & mergen & Smoke-Test mit Render ausführen
+2) Änderungen auf Main pushen, auf Render deployen & Smoke-Test mit Render ausführen
 ```bash
 ./scripts/smoke-test.sh https://expenses-dsjj.onrender.com
 ```
 **Ergebnis:** SMOKE TEST PASSED
 
 
+### 5 - CD-Workflow prüfen
+- `.github/workflows/cd.yml` anpassen mithilfe der Kursmaterialien
+- `RENDER_DEPLOY_HOOK` von Render-Service → *Settings* → *Deploy Hook* → URL
+   kopieren (niemals öffentlich ablegen!)
+- **Automatischen Deploy abschalten** (sonst deployt Render *zusätzlich* bei
+   jedem Push): Service → *Settings* → *Auto-Deploy* auf *Off*. Ab jetzt deployt
+   nur noch die Pipeline
+- in GitHub diese zwei Werte hinterlegen, unter Settings → Secrets and variables →   Actions:
+| Name | Ablage | Wert |
+|---|---|---|
+| `RENDER_DEPLOY_HOOK` | Repository secrets | Deploy-Hook-URL aus deinem Render-Service |
+| `APP_URL` | Repository variables | `https://expenses-dsjj.onrender.com` |
 
-### 5 - 
+- Änderungen in Main pushen
+- **Auslösen**: In GitHub *Actions* → Workflow *CD* → *Run workflow* (manueller
+   `workflow_dispatch`). Nach grüner CI startet der Workflow auch automatisch
+   über `workflow_run`.
+    - Der Workflow ruft den Deploy Hook per `curl` auf, wartet, und führt dann `smoke-test.sh` gegen `${{ vars.APP_URL }}` aus.
+
+
 ```bash
 ```
 
+### 6 - 
 ```bash
 ```
 
