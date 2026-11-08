@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 #
-# Smoke test for the Taskboard application.
+# file structure was copied from course materials "woche-06-continuous-deployment-cloud/code/smoke-test.sh"
+#
+# Smoke test for the Expense Tracking application.
 #
 # Usage:
-#   ./smoke-test.sh https://taskboard-xxxx.onrender.com
+#   ./scripts/smoke-test.sh https://expenses-dsjj.onrender.com
 #
 # Exercises the critical path end to end against a *running* instance:
 #   1. /health   liveness (retried with backoff, because a Render free
 #                instance is spun down after 15 min and needs up to a minute
 #                to wake up on the first request)
 #   2. /ready    readiness
-#   3. POST      create a task
+#   3. POST      create an expense
 #   4. GET       read it back
 #   5. DELETE    remove it again
 #
@@ -26,7 +28,7 @@ set -euo pipefail
 
 if [ "$#" -ne 1 ]; then
   echo "usage: $0 <base-url>" >&2
-  echo "example: $0 https://taskboard-xxxx.onrender.com" >&2
+  echo "example: $0 https://expenses-dsjj.onrender.com" >&2
   exit 2
 fi
 
@@ -90,7 +92,7 @@ done
 
 [ "$healthy" -eq 1 ] || fail "/health did not become healthy after ${HEALTH_RETRIES} attempts"
 
-# --- 2/5 readiness -----------------------------------------------------------
+# --- 2/5 readiness -----not implemented yet------------------------------------------------------
 
 echo "== 2/5 checking /ready =="
 raw="$(curl "${CURL_OPTS[@]}" -w $'\n%{http_code}' "${BASE_URL}/ready")" || fail "/ready request failed"
@@ -101,37 +103,39 @@ echo "  /ready OK: ${BODY}"
 
 # --- 3/5 create --------------------------------------------------------------
 
-echo "== 3/5 creating a task via POST /api/tasks =="
+echo "== 3/5 creating an expense via POST /api/expenses =="
 title="smoke-test-${RANDOM}-$$"
 raw="$(curl "${CURL_OPTS[@]}" \
   -H 'Content-Type: application/json' \
-  -d "{\"title\":\"${title}\"}" \
+  -d "{\"title\":\"${title}\",\"amount\":\"12.50\",\"date\":\"2026-11-08\",\"category\":\"Other\"}" \
   -w $'\n%{http_code}' \
-  "${BASE_URL}/api/tasks")" || fail "POST /api/tasks request failed"
+  "${BASE_URL}/api/expenses")" || fail "POST /api/expenses request failed"
+
 split_response "$raw"
-[ "$STATUS" = "201" ] || fail "POST /api/tasks returned HTTP ${STATUS} (expected 201); body: ${BODY}"
-printf '%s' "$BODY" | grep -q "\"title\":\"${title}\"" || fail "created task is missing its title: ${BODY}"
+[ "$STATUS" = "201" ] || fail "POST /api/expenses returned HTTP ${STATUS} (expected 201); body: ${BODY}"
+printf '%s' "$BODY" | grep -q "\"title\":\"${title}\"" || fail "created expense is missing its title: ${BODY}"
+printf '%s' "$BODY" | grep -q '"amount":"12.50"' || fail "created expense has an unexpected amount: ${BODY}"
 
 # Parse the numeric id out of the JSON using only grep.
 id="$(printf '%s' "$BODY" | grep -oE '"id"[[:space:]]*:[[:space:]]*[0-9]+' | grep -m1 -oE '[0-9]+')"
-[ -n "$id" ] || fail "could not parse a task id from: ${BODY}"
-echo "  created task id=${id}"
+[ -n "$id" ] || fail "could not parse an expense id from: ${BODY}"
+echo "  created expense id=${id}"
 
 # --- 4/5 read back -----------------------------------------------------------
 
-echo "== 4/5 reading it back via GET /api/tasks/${id} =="
-raw="$(curl "${CURL_OPTS[@]}" -w $'\n%{http_code}' "${BASE_URL}/api/tasks/${id}")" || fail "GET /api/tasks/${id} request failed"
+echo "== 4/5 reading expenses via GET /api/expenses =="
+raw="$(curl "${CURL_OPTS[@]}" -w $'\n%{http_code}' "${BASE_URL}/api/expenses")" || fail "GET /api/expenses request failed"
 split_response "$raw"
-[ "$STATUS" = "200" ] || fail "GET /api/tasks/${id} returned HTTP ${STATUS} (expected 200); body: ${BODY}"
-printf '%s' "$BODY" | grep -q "\"title\":\"${title}\"" || fail "read-back task is missing its title: ${BODY}"
+[ "$STATUS" = "200" ] || fail "GET /api/expenses returned HTTP ${STATUS} (expected 200); body: ${BODY}"
+printf '%s' "$BODY" | grep -q "\"title\":\"${title}\"" || fail "read-back expense is missing its title: ${BODY}"
 echo "  read-back OK: ${BODY}"
 
 # --- 5/5 delete --------------------------------------------------------------
 
-echo "== 5/5 deleting it via DELETE /api/tasks/${id} =="
-status="$(curl "${CURL_OPTS[@]}" -o /dev/null -w '%{http_code}' -X DELETE "${BASE_URL}/api/tasks/${id}")" || fail "DELETE /api/tasks/${id} request failed"
-[ "$status" = "204" ] || fail "DELETE /api/tasks/${id} returned HTTP ${status} (expected 204)"
-echo "  deleted task id=${id}"
+echo "== 5/5 deleting it via DELETE /api/expenses/${id} =="
+status="$(curl "${CURL_OPTS[@]}" -o /dev/null -w '%{http_code}' -X DELETE "${BASE_URL}/api/expenses/${id}")" || fail "DELETE /api/expenses/${id} request failed"
+[ "$status" = "200" ] || fail "DELETE /api/expenses/${id} returned HTTP ${status} (expected 200)"
+echo "  deleted expense id=${id}"
 
 echo
 echo "SMOKE TEST PASSED"
