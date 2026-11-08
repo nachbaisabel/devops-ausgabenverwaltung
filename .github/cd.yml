@@ -1,12 +1,14 @@
-# Continuous Deployment for Taskboard.
+# Continuous Deployment for the Expense Tracking application.
+#
+# file structure was copied from course materials "woche-06-continuous-deployment-cloud/code/smoke-test.sh"
 #
 # Trigger the Render deploy only after CI has passed on main, then smoke-test
 # the running service. Belongs at .github/workflows/cd.yml in the repo root.
 #
-# Requires (see code/README.md for how to create them):
+# Requires:
 #   - secret RENDER_DEPLOY_HOOK : the service's deploy hook URL (Render dashboard)
 #   - variable APP_URL          : the public service URL, e.g.
-#                                 https://taskboard-xxxx.onrender.com
+#                                 https://expenses-dsjj.onrender.com
 #
 # This workflow assumes the CI workflow (week 5) is named "CI". Adjust the name
 # under workflow_run.workflows if yours differs.
@@ -27,7 +29,7 @@ on:
 permissions:
   contents: read
 
-# Never let two deploys race; a newer push supersedes an in-flight deploy.
+# Serialize deploys without cancelling an active deployment.
 concurrency:
   group: cd-production
   cancel-in-progress: false
@@ -74,5 +76,4 @@ jobs:
             echo "APP_URL variable is not set" >&2
             exit 1
           fi
-          chmod +x woche-06-continuous-deployment-cloud/code/smoke-test.sh
-          woche-06-continuous-deployment-cloud/code/smoke-test.sh "${APP_URL}"
+          bash scripts/smoke-test.sh "${APP_URL}"
