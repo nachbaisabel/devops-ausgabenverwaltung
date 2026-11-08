@@ -17,6 +17,9 @@ Mein Kurs: **CDS212 – DevOps** · Mein Projekt: **Ausgabenverwaltung**
 
 **Currently: Woche 6**
 
+spätere ToDos:
+- [ ] minimales frontend
+
 ## Hausübungen & Lernmaterialien
 
 - https://github.com/nachbaisabel/devops-course/
@@ -380,14 +383,13 @@ ruff check . && ruff format --check . && python -m pytest --cov=app --cov-report
 ## Woche 6 – Continuous Deployment
 
 - [x] `render.yaml` im Repo-Hauptordner anpassen: Service-Name, `./Dockerfile`, Build-Kontext `.`
-- [ ] Render-Service für die Ausgabenverwaltung erstellen und Repository verbinden mit Blueprint-Import
-    - Name: expense tracking
+- [x] Render-Service für die Ausgabenverwaltung erstellen und Repository verbinden mit Blueprint-Import
 - [ ] Speicher für Render festlegen: In-Memory oder erreichbares Postgres; Compose-Datenbank läuft nicht automatisch auf Render
 - [ ] Variablen setzen: `PORT`, `GUNICORN_WORKERS`, `APP_VERSION`, `LOG_LEVEL`; `DATABASE_URL` nur bei Cloud-Datenbank
-- [ ] Konfiguration im Python-Code prüfen: `APP_VERSION` in `/health`, `LOG_LEVEL` auswerten; `config.py` optional als zentrale Ablage
-- [ ] `/ready` passend zum Repository ergänzen und testen; Render-Healthcheck bleibt `/health`
+- [x] Konfiguration im Python-Code prüfen: `APP_VERSION` in `/health`, `LOG_LEVEL` auswerten; `config.py` optional als zentrale Ablage
+- [x] `/ready` passend zum Repository ergänzen und testen; Render-Healthcheck bleibt `/health`
 - [ ] `.env.example` mit Variablennamen und unkritischen Beispielwerten anlegen; `.env` bleibt aus Git ausgeschlossen
-- [ ] Erstes Deployment prüfen: öffentliche Render-URL, `/health`, API und Logs
+- [x] Erstes Deployment prüfen: öffentliche Render-URL, `/health`, API und Logs
 - [ ] `smoke-test.sh` auf Ausgaben-Endpunkte und Dezimalstrings anpassen; gegen Render ausführen
 - [ ] `.github/workflows/cd.yml` einrichten: Deployment nur nach erfolgreicher CI auf `main`
 - [ ] GitHub konfigurieren: Render-Deploy-Hook als Secret, `APP_URL` als Variable; unbedingte Render-Autodeploys abschalten
@@ -406,11 +408,81 @@ ruff check . && ruff format --check . && python -m pytest --cov=app --cov-report
 - **`DATABASE_URL`:** Zugangsdaten nur in Render/GitHub-Secrets, keine echten Werte in `.env.example`
 
 
-### Render 
+### 1 - Render Web-Service einrichten
 - `render.yaml` im Repo-Hauptordner anpassen: Service-Name, `./Dockerfile`, Build-Kontext `.`
 - Render-Service für die Ausgabenverwaltung erstellen und Repository verbinden mit Blueprint-Import
-- Website
+- Name: `expense tracking`
+- URL: https://expenses-dsjj.onrender.com
+- Health Check: https://expenses-dsjj.onrender.com/health --> {"status":"ok"}
+- derzeitige Einstellungen:
+    - keine `DATABASE_URL` Variable = Render verwendet momentan In-Memory
+    - GUNICORN_WORKERS = 1
 
-### Smoke-Test 
+### 2 -  Render-Instanz prüfen
+```bash
+curl -i https://expenses-dsjj.onrender.com/health
+curl -i https://expenses-dsjj.onrender.com/api/expenses
+```
+**Ergebnis:**
+- {"status":"ok"}
+- [] = noch keine Ausgaben bisher eingetragen
 
-./scripts/smoke-test.sh https://taskboard-w8aq.onrender.com
+### 3 - API online testen
+1) Gültige Ausgabe anlegen & abfragen:
+```bash
+curl -i -X POST https://expenses-dsjj.onrender.com/api/expenses \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Deployment-Test","amount":"12.50","date":"2026-11-08","category":"Other"}'
+
+curl -i https://expenses-dsjj.onrender.com/api/expenses
+```
+**Ergebnis:** beim Anlegen 201, beim Abrufen 200 und die angelegte Ausgabe in der Liste
+
+2) Ungültige Ausgabe anlegen & abfragen:
+```bash
+curl -i -X POST https://expenses-dsjj.onrender.com/api/expenses \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Deployment-Test","amount":"12.50","date":"2026-11-08","category":"Test"}'
+
+curl -i https://expenses-dsjj.onrender.com/api/expenses
+```
+**Ergebnis:** 400, kein Eintrag gespeichert
+
+3) Testeintrag löschen und kontrollieren:
+```bash
+curl -i -X DELETE https://expenses-dsjj.onrender.com/api/expenses/1
+
+curl -i https://expenses-dsjj.onrender.com/api/expenses
+```
+**Ergebnis:** DELETE liefert 200 mit Bestätigung; anschliessende Liste ist wieder [] leer
+
+
+### 4 - Smoke-Test 
+- `smoke-test.sh` angepasst an meine Applikation, mit der Hilfe von den Kursmaterialien
+
+1) Smoke-Tests lokal zuerst prüfen
+```bash
+python -m flask --app wsgi:app run --port 8000
+```
+--> in einem 2. Terminal
+```bash
+bash scripts/smoke-test.sh http://127.0.0.1:8000
+```
+**Ergebnis:** SMOKE TEST PASSED
+
+2) Änderungen auf Main pushen & mergen & Smoke-Test mit Render ausführen
+```bash
+./scripts/smoke-test.sh https://expenses-dsjj.onrender.com
+```
+**Ergebnis:** SMOKE TEST PASSED
+
+
+
+### 5 - 
+```bash
+```
+
+```bash
+```
+
+
