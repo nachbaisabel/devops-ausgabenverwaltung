@@ -8,6 +8,7 @@ from app.repository import InMemoryExpenseRepository, PostgresExpenseRepository
 def create_app():
     # Create and configure the Flask application
     app = Flask(__name__)
+    app.logger.setLevel(os.getenv("LOG_LEVEL", "INFO").upper())
 
     # every time the app is created, a new instance of the repository is created
     database_url = os.getenv("DATABASE_URL")
