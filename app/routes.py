@@ -1,3 +1,5 @@
+import os
+
 from flask import Blueprint, current_app, jsonify, request
 
 from app.models import (
@@ -32,7 +34,7 @@ def health():
     Kubernetes restarts the container when this fails, so a slow database
     must never be able to trigger a restart loop.
     """
-    return jsonify(status="ok")
+    return jsonify(status="ok", version=os.getenv("APP_VERSION", "0.0.0-dev"))
 
 
 # checks whether app can serve request and dependencies such as database
