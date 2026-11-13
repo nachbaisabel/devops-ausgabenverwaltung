@@ -13,7 +13,7 @@ services:
       args:
         APP_VERSION: ${APP_VERSION:-1.0.0-local}
     ports:
-      - "8002:8000" # adapted
+      - "8000:8000" # adapted
     environment:
       # "db" is the DNS name of the database container on the compose network.
       DATABASE_URL: postgresql://expenses:${POSTGRES_PASSWORD:-changeme}@db:5432/expenses

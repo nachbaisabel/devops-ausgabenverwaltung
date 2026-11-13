@@ -4,6 +4,7 @@
 
 Mein Kurs: **CDS212 – DevOps** · Mein Projekt: **Ausgabenverwaltung**
 
+**Nachweise Screenshots:** `/screenshots`
 - [x] Woche 1
 - [x] Woche 2
 - [x] Woche 3
@@ -15,9 +16,9 @@ Mein Kurs: **CDS212 – DevOps** · Mein Projekt: **Ausgabenverwaltung**
 - [ ] Woche 9
 - [ ] Woche 10
 
-**Currently: Woche 6**
+**Aktuell: Woche 6 – Dokumentation abschliessen.**
 
-spätere ToDos:
+Spätere ToDos:
 - [ ] minimales frontend
 
 ## Hausübungen & Lernmaterialien
@@ -107,7 +108,7 @@ curl http://localhost:8000/api/expenses
 ```
 
 Erwartet: Health 200, POST 201 mit ID, anschliessend die Ausgabe in der Liste.
-Port 8000 muss für den lokalen Server frei sein; Docker verwendet bei mir Host-Port 8002.
+Flask und Docker verwenden lokal Port 8000; immer nur eine der beiden Varianten starten.
 
 ### Automatisierte Tests
 
@@ -129,34 +130,34 @@ Ergebnis: **14 passed** im In-Memory-Pfad. Postgres wurde erst in Woche 4 manuel
 geprüft.
 
 ---
-# Woche 04 – Die eigene Anwendung containerisieren
+## Woche 04 – Die eigene Anwendung containerisieren
 
 - [x] Multi-Stage-Dockerfile mit Slim-Basis und sinnvoller Cache-Reihenfolge erstellen.
 - [x] `.dockerignore` ergänzen und Image erfolgreich bauen.
-- [x] App mit Gunicorn als `appuser` starten; Healthcheck und API auf Host-Port 8002 prüfen.
+- [x] App mit Gunicorn als `appuser` starten; Healthcheck und API auf Host-Port 8000 prüfen.
 - [x] Compose mit `web`, Postgres 16, DB-Healthcheck und benanntem Volume einrichten.
 - [x] Postgres-Repository implementieren und anhand von `DATABASE_URL` auswählen.
 - [x] Beträge auf `Decimal` und Datumswerte auf `date` umstellen; 14 lokale Tests bestanden.
 - [x] Anlegen, Ändern und Löschen über die API mit Postgres prüfen.
 - [x] Persistenz nach `down` und erneutem Start nachweisen; Unterschied zu `down -v` erklären.
 - [x] README und Testabläufe dokumentieren; Optimierungen mit geschätzten Vergleichswerten begründen.
-- [ ] Änderungen selbst committen, pushen und PR nach `main` mergen.
+- [x] Änderungen committen, pushen und per PR #16 nach `main` mergen (Merge `a18ccfc`, Umsetzung `b36ae35`).
 
 
 ### Dockerfile schreiben & testen
 ```bash
 docker build -t ausgabenverwaltung:local .
-docker run -d -p 127.0.0.1:8002:8000 --name ausgabenverwaltung ausgabenverwaltung:local
+docker run -d -p 127.0.0.1:8000:8000 --name ausgabenverwaltung ausgabenverwaltung:local
 
-curl -i -X POST http://localhost:8002/api/expenses \
+curl -i -X POST http://localhost:8000/api/expenses \
   -H "Content-Type: application/json" \
   -d '{"title":"Mittagessen","amount":"12.50","date":"2026-11-06","category":"Food"}'
 
-curl http://localhost:8002/api/expenses
+curl http://localhost:8000/api/expenses
 ```
 
 Der Einzelcontainer verwendet ohne `DATABASE_URL` In-Memory. Vor dem Compose-Start
-den Einzelcontainer stoppen und entfernen, falls er noch Port 8002 belegt:
+den Einzelcontainer stoppen und entfernen, falls er noch Port 8000 belegt:
 
 ```bash
 docker stop ausgabenverwaltung
@@ -174,7 +175,7 @@ docker compose logs --tail=30 web
 ### Datenbank testen
 1) Ausgabe anlegen --> erwartete Ausgabe: 201 Created
 ```bash
-curl -i -X POST http://localhost:8002/api/expenses \
+curl -i -X POST http://localhost:8000/api/expenses \
   -H "Content-Type: application/json" \
   -d '{"title":"Postgres-Test","amount":"12.50","date":"2026-11-06","category":"Food"}'
 ```
@@ -193,28 +194,28 @@ docker compose up -d
 4) Datenbank erneut überprüfen – vorher auf einen gesunden Web-Container warten.
 Die Ausgabe muss nach `down` und erneutem Start noch vorhanden sein.
 ```bash
-curl http://localhost:8002/api/expenses
+curl http://localhost:8000/api/expenses
 ```
 
 5) Testausgabe ändern
 ```bash
-curl -i -X PUT http://localhost:8002/api/expenses/1 \
+curl -i -X PUT http://localhost:8000/api/expenses/1 \
   -H "Content-Type: application/json" \
   -d '{"title":"Postgres-Test geändert","amount":"15.00","date":"2026-11-06","category":"Food","description":"Update getestet"}'
-curl http://localhost:8002/api/expenses
+curl http://localhost:8000/api/expenses
 ```
 
 6) Testausgabe löschen
 ```bash
-curl -i -X DELETE http://localhost:8002/api/expenses/1
-curl http://localhost:8002/api/expenses
+curl -i -X DELETE http://localhost:8000/api/expenses/1
+curl http://localhost:8000/api/expenses
 ```
 
 7) Bereits gelöschte ID erneut löschen – erwartet: 404 mit `Expense not found`.
 Die ID 1 stammt aus meinem Testlauf; beim Wiederholen die tatsächlich zurückgegebene ID verwenden.
 
 ```bash
-curl -i -X DELETE http://localhost:8002/api/expenses/1
+curl -i -X DELETE http://localhost:8000/api/expenses/1
 ```
 
 **Beobachtetes Ergebnis:** POST 201, Datensatz per SQL bestätigt, nach Compose-Neustart weiterhin vorhanden, PUT 200 mit gespeicherten Änderungen, DELETE 200 und danach leere Liste; erneutes Löschen liefert die Fehlermeldung für eine unbekannte ID.
@@ -251,11 +252,11 @@ mit `-v` wurde für diese Projektprüfung nicht ausgeführt.
 - [x] Validierungstests ergänzen; 45 Tests bestanden
 - [x] Coverage-Gate mit mindestens 80 % konfigurieren; lokal 82,56 % erreicht
 - [x] Workflow mit Lint, Formatprüfung, Testmatrix, Docker-Build und Smoke-Test vorbereiten
-- [ ] Erfolgreiche CI-Läufe für alle Jobs auf GitHub prüfen
-- [ ] Erforderliche Status-Checks im Branch-Schutz von `main` festlegen
-- [ ] Absichtlichen Fehler im PR nachweisen: rot und Merge gesperrt, danach korrigiert und grün
-- [ ] Rote und grüne Checks mit Screenshots und PR-Link dokumentieren
-- [ ] CI-Badge in der README ergänzen und PR mergen
+- [x] Erfolgreiche CI-Läufe für alle Jobs auf GitHub prüfen
+- [x] Erforderliche Status-Checks im Branch-Schutz von `main` festlegen
+- [x] Absichtlichen Fehler im PR nachweisen: rot und Merge gesperrt, danach korrigiert und grün
+- [x] Rote und grüne Checks mit Screenshots und PR-Link dokumentieren
+- [x] CI-Badge in der README ergänzen und PR mergen
 
 ### 1 – Werkzeuge installieren und Ausgangszustand prüfen
 
@@ -376,132 +377,50 @@ source .venv/bin/activate
 ruff check . && ruff format --check . && python -m pytest --cov=app --cov-report=term-missing
 ```
 
-**Zuletzt dokumentierter lokaler Stand:** Total coverage: 82.56%, 45 passed
+**Zuletzt dokumentierter lokaler Stand (11.11.2026):** 45 Tests bestanden, Coverage 81,68 % (Vorgabe 80 % erfüllt); Ruff-Lint und Formatprüfung grün.
 
 
 ---
 ## Woche 6 – Continuous Deployment
 
-- [x] `render.yaml` im Repo-Hauptordner anpassen: Service-Name, `./Dockerfile`, Build-Kontext `.`
-- [x] Render-Service für die Ausgabenverwaltung erstellen und Repository verbinden mit Blueprint-Import
-- [ ] Speicher für Render festlegen: In-Memory oder erreichbares Postgres; Compose-Datenbank läuft nicht automatisch auf Render
-- [ ] Variablen setzen: `PORT`, `GUNICORN_WORKERS`, `APP_VERSION`, `LOG_LEVEL`; `DATABASE_URL` nur bei Cloud-Datenbank
-- [x] Konfiguration im Python-Code prüfen: `APP_VERSION` in `/health`, `LOG_LEVEL` auswerten; `config.py` optional als zentrale Ablage
-- [x] `/ready` passend zum Repository ergänzen und testen; Render-Healthcheck bleibt `/health`
-- [ ] `.env.example` mit Variablennamen und unkritischen Beispielwerten anlegen; `.env` bleibt aus Git ausgeschlossen
-- [x] Erstes Deployment prüfen: öffentliche Render-URL, `/health`, API und Logs
-- [ ] `smoke-test.sh` auf Ausgaben-Endpunkte und Dezimalstrings anpassen; gegen Render ausführen
-- [ ] `.github/workflows/cd.yml` einrichten: Deployment nur nach erfolgreicher CI auf `main`
-- [ ] GitHub konfigurieren: Render-Deploy-Hook als Secret, `APP_URL` als Variable; unbedingte Render-Autodeploys abschalten
-- [ ] Grünen CD-Workflow und erfolgreichen Smoke-Test nachweisen
-- [ ] Cold Start beobachten und Rollback samt Erfolgskontrolle durchführen
-- [ ] `DEPLOYMENT.md` schreiben: A Voraussetzungen, B lokale Installation, C Variablen, D Deployment, E Verifikation, F Rollback, G mindestens vier Fehlerbilder, H Kontakt/Eskalation
-- [ ] Render-URL mit sichtbarer URL festhalten; README aktualisieren
-- [ ] Runbook anhand der eigenen Anleitung durchgehen; Tests und CI grün, PR prüfen und mergen
+Anleitung: [Deployment-Runbook](DEPLOYMENT.md) ·
+Live-App: https://expenses-dsjj.onrender.com ·
+Nachweise: [screenshots/](screenshots/)
 
-### Entscheidungen
+### Erledigt
 
-- **Gunicorn:** zunächst ein Worker; bei In-Memory notwendig, mit Postgres sind mehrere möglich, aber keine Pflicht
-- **Port:** Container lauscht aktuell auf 8000; Render passend konfigurieren, Host-Port 8002 betrifft nur lokales Compose
-- **Feature Flags:** optional, aktuell keine erforderlich
-- **`config.py`:** keine Pflicht; Umgebungsvariablen müssen im Code tatsächlich ausgewertet werden
-- **`DATABASE_URL`:** Zugangsdaten nur in Render/GitHub-Secrets, keine echten Werte in `.env.example`
+- [x] Render-Blueprint mit Docker, Branch `main`, Port 8000 und Healthcheck `/health` eingerichtet.
+- [x] In-Memory ohne `DATABASE_URL` und mit einem Gunicorn-Worker gewählt; Datenverlust bei Neustarts dokumentiert.
+- [x] Render-Variablen `PORT`, `GUNICORN_WORKERS`, `APP_VERSION` und `LOG_LEVEL` gesetzt.
+- [x] `/ready` implementiert; lokal und auf Render im Smoke-Test geprüft.
+- [x] `APP_VERSION` in `/health` und `LOG_LEVEL` für den Flask-App-Logger ausgewertet; Health-Test angepasst.
+- [x] Codeänderungen als `234d10f` committed und gepusht; laut eigener Rückmeldung per PR integriert, vier CI-Checks und CD #3 erfolgreich.
+- [x] Smoke-Test an die Ausgaben-API angepasst; lokal und auf Render bestanden (Health, Readiness, Anlegen, Listenabruf, Löschen).
+- [x] CD unter `.github/workflows/cd.yml` eingerichtet: nach erfolgreicher CI auf `main` bzw. manuell auslösbar.
+- [x] Deploy-Hook als GitHub Secret und `APP_URL` als Variable hinterlegt; Render-Autodeploy deaktiviert.
+- [x] Cold Start beobachtet und Rollback mit anschliessender Wiederherstellung geprüft (Ergebnisse unten).
+- [x] `.env.example` angelegt; lokale `.env` ist ignoriert. Ergänzungen unten noch offen.
+- [x] `DEPLOYMENT.md` mit Abschnitten A–H geschrieben; vier beobachtete Fehlerbilder sowie weitere mögliche Störungen dokumentiert.
+- [x] Lokale Installation nach Abschnitt B in separatem Testordner durchlaufen; laut eigener Rückmeldung getestet.
+- [x] Lokale Portangaben auf 8000 vereinheitlicht; Compose auf `8000:8000` umgestellt und laut eigener Rückmeldung getestet.
+- [x] Öffentliche Versionsausgabe bestätigt: HTTP 200 mit `{"status":"ok","version":"1.0.0"}`.
+- [x] Vier Screenshots gesichert; [Healthcheck-Nachweis](screenshots/w6_healthcheck.png) im Runbook verlinkt.
 
+### Prüfergebnisse
 
-### 1 - Render Web-Service einrichten
-- `render.yaml` im Repo-Hauptordner anpassen: Service-Name, `./Dockerfile`, Build-Kontext `.`
-- Render-Service für die Ausgabenverwaltung erstellen und Repository verbinden mit Blueprint-Import
-- Name: `expense tracking`
-- URL: https://expenses-dsjj.onrender.com
-- Health Check: https://expenses-dsjj.onrender.com/health --> {"status":"ok"}
-- derzeitige Einstellungen:
-    - keine `DATABASE_URL` Variable = Render verwendet momentan In-Memory
-    - GUNICORN_WORKERS = 1
+| Prüfung | Ergebnis |
+|---|---|
+| Lokale Codeprüfung (11.11.2026) | Ruff-Lint und Formatierung grün, 45 Tests bestanden, Coverage 81,68 % (Vorgabe 80 %) |
+| Cold Start (11.11.2026) | Erster Aufruf 23,398553 s, direkt danach 0,160756 s; beide HTTP 200 |
+| Rollback (11.11.2026) | `b8b39ba` → `4c0a451` → `b8b39ba`; Smoke-Test nach Rollback und Wiederherstellung bestanden |
+| Konfigurations-Deployment (13.11.2026) | CD #3 erfolgreich nach 8 min 13 s; anschliessend `/health` mit Version `1.0.0` bestätigt |
 
-### 2 -  Render-Instanz prüfen
-```bash
-curl -i https://expenses-dsjj.onrender.com/health
-curl -i https://expenses-dsjj.onrender.com/api/expenses
-```
-**Ergebnis:**
-- {"status":"ok"}
-- [] = noch keine Ausgaben bisher eingetragen
+### Noch offen
 
-### 3 - API online testen
-1) Gültige Ausgabe anlegen & abfragen:
-```bash
-curl -i -X POST https://expenses-dsjj.onrender.com/api/expenses \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Deployment-Test","amount":"12.50","date":"2026-11-08","category":"Other"}'
+- [ ] README aktualisieren: Render-URL, CI/CD-Ablauf, Versionsausgabe und vorhandene `.env.example` beschreiben; `/ready` nicht mehr als geplant aufführen.
+- [ ] `.env.example` vervollständigen: `PORT`, `GUNICORN_WORKERS` und Postgres-Beispiel für `expenses` statt `taskboard`.
+- [ ] Runbook bereinigen: übrige Voraussetzungen-Platzhalter entfernen; Kubernetes bis Woche 8 als Ausblick kennzeichnen; „still in progress“ entfernen.
+- [ ] ToDo, README, Runbook, Portänderung und Screenshots committen und per PR integrieren; danach CI/CD prüfen. Runbook-Commit: `docs: add deployment runbook`.
+- [ ] Empfohlene Ergänzung: automatisierte `/ready`-Tests für verfügbares (200) und nicht verfügbares Repository (503).
 
-curl -i https://expenses-dsjj.onrender.com/api/expenses
-```
-**Ergebnis:** beim Anlegen 201, beim Abrufen 200 und die angelegte Ausgabe in der Liste
-
-2) Ungültige Ausgabe anlegen & abfragen:
-```bash
-curl -i -X POST https://expenses-dsjj.onrender.com/api/expenses \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Deployment-Test","amount":"12.50","date":"2026-11-08","category":"Test"}'
-
-curl -i https://expenses-dsjj.onrender.com/api/expenses
-```
-**Ergebnis:** 400, kein Eintrag gespeichert
-
-3) Testeintrag löschen und kontrollieren:
-```bash
-curl -i -X DELETE https://expenses-dsjj.onrender.com/api/expenses/1
-
-curl -i https://expenses-dsjj.onrender.com/api/expenses
-```
-**Ergebnis:** DELETE liefert 200 mit Bestätigung; anschliessende Liste ist wieder [] leer
-
-
-### 4 - Smoke-Test 
-- `smoke-test.sh` angepasst an meine Applikation, mit der Hilfe von den Kursmaterialien
-
-1) Smoke-Tests lokal zuerst prüfen
-```bash
-python -m flask --app wsgi:app run --port 8000
-```
---> in einem 2. Terminal
-```bash
-bash scripts/smoke-test.sh http://127.0.0.1:8000
-```
-**Ergebnis:** SMOKE TEST PASSED
-
-2) Änderungen auf Main pushen, auf Render deployen & Smoke-Test mit Render ausführen
-```bash
-./scripts/smoke-test.sh https://expenses-dsjj.onrender.com
-```
-**Ergebnis:** SMOKE TEST PASSED
-
-
-### 5 - CD-Workflow prüfen
-- `.github/workflows/cd.yml` anpassen mithilfe der Kursmaterialien
-- `RENDER_DEPLOY_HOOK` von Render-Service → *Settings* → *Deploy Hook* → URL
-   kopieren (niemals öffentlich ablegen!)
-- **Automatischen Deploy abschalten** (sonst deployt Render *zusätzlich* bei
-   jedem Push): Service → *Settings* → *Auto-Deploy* auf *Off*. Ab jetzt deployt
-   nur noch die Pipeline
-- in GitHub diese zwei Werte hinterlegen, unter Settings → Secrets and variables →   Actions:
-| Name | Ablage | Wert |
-|---|---|---|
-| `RENDER_DEPLOY_HOOK` | Repository secrets | Deploy-Hook-URL aus deinem Render-Service |
-| `APP_URL` | Repository variables | `https://expenses-dsjj.onrender.com` |
-
-- Änderungen in Main pushen
-- **Auslösen**: In GitHub *Actions* → Workflow *CD* → *Run workflow* (manueller
-   `workflow_dispatch`). Nach grüner CI startet der Workflow auch automatisch
-   über `workflow_run`.
-    - Der Workflow ruft den Deploy Hook per `curl` auf, wartet, und führt dann `smoke-test.sh` gegen `${{ vars.APP_URL }}` aus.
-
-
-```bash
-```
-
-### 6 - 
-```bash
-```
-
-
+**Betrieb:** Flask und Compose verwenden lokal beide Port 8000 und laufen daher abwechselnd. Render verwendet In-Memory mit einem Worker; eine Cloud-Datenbank ist aktuell nicht eingerichtet. Kubernetes folgt in Woche 8.
