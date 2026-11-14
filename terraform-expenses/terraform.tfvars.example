@@ -1,0 +1,9 @@
+# copy the file to use these values
+# cp terraform.tfvars.example terraform.tfvars
+
+# without this file default values from `variables.tf` will be applied
+
+container_name = "expenses"
+host_port      = 8000
+image_tag      = "local"
+app_version    = "1.0.0-iac"

@@ -9,14 +9,10 @@ Datum zu erfassen und nach Monat und Kategorie auszuwerten.
 vollständige DevOps-Kette von der Versionsverwaltung über Tests und Deployment
 bis zum Monitoring nach. Der fachliche Umfang bleibt bewusst klein.
 ---
-**Stand: Woche 6.**  Die Ausgaben-API läuft lokal mit Flask oder über Docker
-Compose mit Postgres sowie öffentlich auf Render. GitHub Actions prüft Lint,
-Formatierung, Tests und Docker-Build. Nach erfolgreicher CI auf `main`
-startet das Deployment mit anschliessendem Smoke-Test.
-
-Lokal wurden zuletzt 45 Tests mit 81,68 % Coverage bestanden.
-Auf Render wird aktuell In-Memory mit einem Worker verwendet.
-Die Auswertungen nach Monat und Kategorie folgen.
+**Stand: Woche 7.** Zusätzlich lässt sich die lokale Infrastruktur mit
+Terraform erstellen und entfernen. Image, Container, Netzwerk und Volume
+werden über den Docker-Provider verwaltet. Healthcheck, Smoke-Test,
+Idempotenz, Drift-Erkennung und Portvalidierung wurden geprüft.
 
 ---
 ## Geplanter Funktionsumfang (MVP)
@@ -131,11 +127,12 @@ devops-ausgabenverwaltung/
 ├── screenshots/          # Nachweise
 ├── scripts/
 │   └── smoke-test.sh     # Prüft die laufende API
+├── terraform-expenses/   # Lokale Infrastruktur mit Terraform und Anleitung
 ├── tests/
 │   ├── conftest.py       # Gemeinsamer Testclient
 │   ├── test_health.py    # Prüft /health
 │   └── test_expenses.py  # Prüft Ausgaben und Fehlerfälle
-│   ├── test_models.py    # Tests der Eingabevalidierung
+│   └── test_models.py    # Tests der Eingabevalidierung
 ├── .dockerignore         # Schliesst lokale Dateien und Secrets vom Docker-Build-Kontext aus
 ├── .env.example          # Unkritische Beispielkonfiguration
 ├── .gitignore            # Verhindert das versehentliche Versionieren lokaler Dateien und Secrets
@@ -223,14 +220,22 @@ Kategorien stehen in `app/models.py`.
 | `LOG_LEVEL` | `INFO` | Steuert das Logging-Level des Flask-App-Loggers |
 | `PORT` | Render: `8000` | Passend zum fest auf Port 8000 gestarteten Gunicorn gesetzt |
 
-Die Datei `.env` sowie Zugangsdaten und Tokens gehören nie ins Repository.
-
 Die vorhandene `.env.example` enthält unkritische Beispielwerte.
 Die lokale `.env` und echte Zugangsdaten gehören nie ins Repository.
 Docker Compose liest `.env` automatisch; der direkte Flask-Start lädt sie im aktuellen Projekt nicht automatisch. `changeme` ist nur ein lokaler Übungswert.
 
 Die vollständige Variablen- und Secrets-Tabelle steht in
 [DEPLOYMENT.md](DEPLOYMENT.md#c---konfiguration-und-secrets).
+
+---
+## Lokale Infrastruktur mit Terraform
+
+Alternativ zu Flask und Docker Compose kann Terraform die lokale Ausgabenverwaltung mit Container, Netzwerk und Volume bereitstellen.
+
+Voraussetzungen, Befehle und Nachweise stehen in
+[terraform-expenses/README.md](terraform-expenses/README.md).
+
+Diese Variante verwendet In-Memory-Speicherung. Das eingebundene Volume macht die Ausgaben nicht persistent. Terraform, Compose und Flask verwenden standardmässig denselben Host-Port 8000 und müssen daher abwechselnd betrieben werden.
 
 ---
 ## Deployment auf Render
