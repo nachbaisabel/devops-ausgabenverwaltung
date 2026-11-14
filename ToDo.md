@@ -36,30 +36,6 @@ Mein Kurs: **CDS212 – DevOps** · Mein Projekt: **Ausgabenverwaltung**
 - [ ] Abschliessenden CI/CD-Lauf zu PR #25 bestätigen; die zuvor erfolgreichen Läufe sind oben dokumentiert.
 - [ ] Empfohlene Ergänzung: automatisierte `/ready`-Tests für verfügbares (200) und nicht verfügbares Repository (503).
 
-### Noch offen W7
-
-- [ ] Dokumentation und Terraform-Dateien abschliessend prüfen, gezielt stagen (keine State-Dateien oder Secrets), committen und per PR nach `main` integrieren; CI prüfen.
-
-### Hausübung W7 – nginx-Webserver mit Terraform
-
-Die Ausgabenverwaltung in `terraform-expenses/` ist bereits praktisch geprüft.
-Die Hausübung fordert zusätzlich nginx mit eigener HTML-Datei; dieser Nachweis
-ist noch offen. Die folgenden Aufgaben bleiben hier oben gesammelt.
-
-- [ ] Separaten Ordner `terraform/` für die nginx-Hausübung anlegen; eigene `.tf`-Dateien, `index.html`, `.gitignore` und README darin ablegen.
-- [ ] Vor `init` die Ausschlüsse einrichten: `.terraform/`, `*.tfstate*`, echte `*.tfvars`; `*.tfvars.example` darf versioniert werden. `.terraform.lock.hcl` ebenfalls versionieren.
-- [ ] `terraform`-Block mit `required_version`, Provider `kreuzwerker/docker` mit `version = "~> 3.0"` und `provider "docker" {}` konfigurieren.
-- [ ] `docker_image` für `nginx:alpine` und `docker_container` mit Referenz auf dieses Image definieren.
-- [ ] Eigene `index.html` mit erkennbarem Text (Name / Woche 7) erstellen und nach `/usr/share/nginx/html/index.html` mounten; bei Bind-Mount absoluten Host-Pfad und `read_only = true` verwenden.
-- [ ] Host-Port als Variable mit `type = number` und Validierung `> 1024` und `<= 65535` definieren; nginx lauscht standardmässig intern auf Port 80.
-- [ ] Output für die vollständige URL aus Hostname und Host-Port ergänzen, z. B. `http://localhost:8080`.
-- [ ] `terraform init`, `terraform fmt` und `terraform validate` ausführen; Formatierung ohne weitere Änderungen und `Success!` nachweisen.
-- [ ] Erstellungsplan prüfen und Screenshot mit geplanten Ressourcen und `Plan: … to add …` als `terraform/plan-screenshot.png` sichern.
-- [ ] `terraform apply` ausführen und mit `curl http://localhost:<port>/` prüfen, dass die eigene HTML-Seite statt der nginx-Standardseite erscheint; Output-URL kontrollieren.
-- [ ] `terraform plan -var="host_port=80"` ausführen: Ablehnung mit der eigenen Validierungsmeldung nachweisen.
-- [ ] Kurze `terraform/README.md` mit Voraussetzung (Docker läuft), Arbeitsverzeichnis und `init`, `apply`, Prüfung sowie `destroy` schreiben.
-- [ ] Mit `terraform destroy` aufräumen; vor dem Commit prüfen, dass keine State-Dateien, Provider-Caches oder echten Secrets versioniert werden.
-
 ### Optionale Erweiterungen W7
 
 - [ ] Bonus der Hausübung: zwei nginx-Instanzen mit verschiedenen Ports über `for_each` (keine kopierten Ressourcenblöcke) erzeugen; beide URLs als Output ausgeben und prüfen.
@@ -766,6 +742,30 @@ terraform plan
 
 
 ## Hausübung W7 – nginx-Webserver mit Terraform
+
+
+### Erledigte Hausübungs-ToDos
+
+Anleitung: [nginx-README](terraform/README.md) ·
+Nachweis: [Erstellungsplan](terraform/plan_screenshot.png)
+
+- [x] Separaten Ordner `terraform/` für die nginx-Hausübung anlegen; eigene `.tf`-Dateien, `index.html`, `.gitignore` und README darin ablegen.
+- [x] Vor `init` die Ausschlüsse einrichten: `.terraform/`, `*.tfstate*`, echte `*.tfvars`; `*.tfvars.example` darf versioniert werden. `.terraform.lock.hcl` ebenfalls versionieren.
+- [x] `terraform`-Block mit `required_version`, Provider `kreuzwerker/docker` mit `version = "~> 3.0"` und `provider "docker" {}` konfigurieren.
+- [x] `docker_image` für `nginx:alpine` und `docker_container` mit Referenz auf dieses Image definieren.
+- [x] Eigene `index.html` mit erkennbarem Text (Name / Woche 7) erstellen und nach `/usr/share/nginx/html/index.html` mounten; bei Bind-Mount absoluten Host-Pfad und `read_only = true` verwenden.
+- [x] Host-Port als Variable mit `type = number` und Validierung `> 1024` und `<= 65535` definieren; nginx lauscht standardmässig intern auf Port 80.
+- [x] Output für die vollständige URL aus Hostname und Host-Port ergänzen, z. B. `http://localhost:8080`.
+- [x] `terraform init`, `terraform fmt` und `terraform validate` ausführen; Dateien formatiert und `Success!` nachgewiesen.
+- [x] Erstellungsplan prüfen und Screenshot mit geplanten Ressourcen und `Plan: … to add …` als `terraform/plan_screenshot.png` sichern.
+- [x] `terraform apply` ausführen und mit `curl http://localhost:<port>/` prüfen, dass die eigene HTML-Seite statt der nginx-Standardseite erscheint; Output-URL kontrollieren.
+- [x] `terraform plan -var="host_port=80"` ausführen: Ablehnung mit der eigenen Validierungsmeldung nachweisen.
+- [x] Kurze `terraform/README.md` mit Voraussetzung (Docker läuft), Arbeitsverzeichnis und `init`, `apply`, Prüfung sowie `destroy` schreiben.
+- [x] Mit `terraform destroy` aufräumen; vor dem Commit prüfen, dass keine State-Dateien, Provider-Caches oder echten Secrets versioniert werden.
+
+**Prüfstand:** Zwei Ressourcen erstellt, eigene HTML-Seite mit HTTP 200 geprüft,
+Port 80 wie erwartet abgelehnt und Testumgebung wieder mit `destroy` aufgeräumt.
+Dateien sind vorgemerkt; Commit, Push und PR-Abschluss bleiben oben offen.
 
 ### 1 – Ordner und Dateien vorbereiten
 
