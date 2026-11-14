@@ -28,7 +28,9 @@ Mein Kurs: **CDS212 – DevOps** · Mein Projekt: **Ausgabenverwaltung**
 ## Offene ToDos aller Wochen
 
 ### Spätere ToDos:
-- [ ] minimales frontend
+- [ ] einfaches HTML-Frontend: `GET` `/`
+- [ ] API Metriken ergänzen: `GET` `/metrics` 
+- [ ] API Statistiken ergänzen: `GET` `/api/expenses/stats` 
 
 ### Noch offen W6
 
