@@ -764,3 +764,88 @@ terraform plan
 **Merksatz:** Konfiguration beschreibt den Sollzustand, der Plan zeigt Änderungen,
 `apply` setzt sie um. Der State ordnet Terraform-Ressourcen realen Docker-Objekten zu.
 
+
+## Hausübung W7 – nginx-Webserver mit Terraform
+
+### 1 – Ordner und Dateien vorbereiten
+
+Im Projekt-Hauptverzeichnis:
+
+```bash
+mkdir -p terraform
+cd terraform
+```
+
+`.gitignore` anlegen und die Dateien vorbereiten:
+
+- `main.tf`: Terraform-Konfiguration, Provider, nginx-Image und Container
+- `variables.tf`: Host-Port mit Standardwert und Validierung
+- `index.html`: eigene Webseite
+- `outputs.tf`: URL des Webservers
+
+### 2 – Terraform vorbereiten und Dateien prüfen
+
+Danach im Ordner `terraform/` ausführen:
+
+```bash
+terraform init
+terraform fmt
+terraform validate
+```
+
+**Ergebnis:** `Success! The configuration is valid.`
+
+### 3 – Erstellungsplan prüfen
+
+```bash
+terraform plan
+```
+
+**Ergebnis:** `Plan: 2 to add, 0 to change, 0 to destroy.`
+
+### 4 – Webserver erstellen
+
+```bash
+terraform apply
+```
+
+Mit `yes` bestätigen.
+
+**Ergebnis:**
+
+```text
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+
+Outputs:
+web_url = "http://localhost:8080"
+```
+
+### 5 – Eigene HTML-Seite prüfen
+
+```bash
+curl -i http://localhost:8080/
+```
+
+**Ergebnis:** HTTP 200 und Inhalt der eigenen `index.html`.
+Die Adresse kann auch im Browser geöffnet werden.
+
+### 6 – Portvalidierung prüfen
+
+```bash
+terraform plan -var="host_port=80"
+```
+
+**Ergebnis:** Beabsichtigte Ablehnung:
+
+```text
+Error: Invalid value for variable
+host_port must be between 1025 and 65535.
+```
+
+### 7 – Aufräumen
+
+```bash
+terraform destroy
+```
+
+>Container und Terraform-Image-Verwaltung werden entfernt. Das lokale Image bleibt wegen `keep_locally = true` erhalten. Die eingebundene `index.html` bleibt ebenfalls erhalten.

@@ -13,6 +13,8 @@ bis zum Monitoring nach. Der fachliche Umfang bleibt bewusst klein.
 Terraform erstellen und entfernen. Image, Container, Netzwerk und Volume
 werden über den Docker-Provider verwaltet. Healthcheck, Smoke-Test,
 Idempotenz, Drift-Erkennung und Portvalidierung wurden geprüft.
+Die nginx-Hausübung mit eigener HTML-Seite, Portvalidierung und URL-Output
+wurde ebenfalls erfolgreich geprüft.
 
 ---
 ## Geplanter Funktionsumfang (MVP)
@@ -127,6 +129,7 @@ devops-ausgabenverwaltung/
 ├── screenshots/          # Nachweise
 ├── scripts/
 │   └── smoke-test.sh     # Prüft die laufende API
+├── terraform/           # Hausübung: nginx mit eigener HTML-Seite
 ├── terraform-expenses/   # Lokale Infrastruktur mit Terraform und Anleitung
 ├── tests/
 │   ├── conftest.py       # Gemeinsamer Testclient
@@ -236,6 +239,8 @@ Voraussetzungen, Befehle und Nachweise stehen in
 [terraform-expenses/README.md](terraform-expenses/README.md).
 
 Diese Variante verwendet In-Memory-Speicherung. Das eingebundene Volume macht die Ausgaben nicht persistent. Terraform, Compose und Flask verwenden standardmässig denselben Host-Port 8000 und müssen daher abwechselnd betrieben werden.
+
+Die separate [Hausübung in terraform/](terraform/README.md) erstellt einen nginx-Webserver mit eigener HTML-Seite auf Host-Port 8080. Portvalidierung, URL-Output und Erstellungsplan sind dort dokumentiert.
 
 ---
 ## Deployment auf Render
