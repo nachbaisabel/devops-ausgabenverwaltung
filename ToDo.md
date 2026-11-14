@@ -10,20 +10,37 @@ Mein Kurs: **CDS212 – DevOps** · Mein Projekt: **Ausgabenverwaltung**
 - [x] Woche 3
 - [x] Woche 4
 - [x] Woche 5
-- [ ] Woche 6
-- [ ] Woche 7
+- [x] Woche 6
+- [x] Woche 7
 - [ ] Woche 8
 - [ ] Woche 9
 - [ ] Woche 10
 
-**Aktuell: Woche 6 – Dokumentation abschliessen.**
+**Aktuell: Woche 7 – Terraform-Dokumentation und PR abschliessen.**
 
-Spätere ToDos:
-- [ ] minimales frontend
+
 
 ## Hausübungen & Lernmaterialien
 
 - https://github.com/nachbaisabel/devops-course/
+
+---
+## Offene ToDos aller Wochen
+
+### Spätere ToDos:
+- [ ] minimales frontend
+
+### Noch offen W6
+
+- [ ] Kubernetes-Platzhalter im Runbook bis Woche 8 durch einen kurzen Ausblick ersetzen.
+- [ ] Abschliessenden CI/CD-Lauf zu PR #25 bestätigen; die zuvor erfolgreichen Läufe sind oben dokumentiert.
+- [ ] Empfohlene Ergänzung: automatisierte `/ready`-Tests für verfügbares (200) und nicht verfügbares Repository (503).
+
+### Optionale Erweiterungen W7
+
+- [ ] Bonus der Hausübung: zwei nginx-Instanzen mit verschiedenen Ports über `for_each` (keine kopierten Ressourcenblöcke) erzeugen; beide URLs als Output ausgeben und prüfen.
+- [ ] Optionales Projektziel später: Postgres über Terraform verwalten und echte Persistenz prüfen.
+
 
 ---
 ## Woche 01 – Vorbereitung
@@ -141,7 +158,6 @@ geprüft.
 - [x] Anlegen, Ändern und Löschen über die API mit Postgres prüfen.
 - [x] Persistenz nach `down` und erneutem Start nachweisen; Unterschied zu `down -v` erklären.
 - [x] README und Testabläufe dokumentieren; Optimierungen mit geschätzten Vergleichswerten begründen.
-- [x] Änderungen committen, pushen und per PR #16 nach `main` mergen (Merge `a18ccfc`, Umsetzung `b36ae35`).
 
 
 ### Dockerfile schreiben & testen
@@ -244,7 +260,7 @@ mit `-v` wurde für diese Projektprüfung nicht ausgeführt.
 - **Grössenvergleich:** Naives Image ca. **1,05 GB**, optimiertes Image ca. **230 MB**. Rechnerische Einsparung ca. **820 MB bzw. 78 %** (1 GB = 1000 MB).
 
 --
-## Woche 5 – Continuous Integration
+## Woche 05 – Continuous Integration
 
 - [x] Issue und Branch `ci/add-quality-gates` für die CI einrichten
 - [x] Ruff und pytest-cov in den Entwicklungsabhängigkeiten ergänzen
@@ -256,7 +272,7 @@ mit `-v` wurde für diese Projektprüfung nicht ausgeführt.
 - [x] Erforderliche Status-Checks im Branch-Schutz von `main` festlegen
 - [x] Absichtlichen Fehler im PR nachweisen: rot und Merge gesperrt, danach korrigiert und grün
 - [x] Rote und grüne Checks mit Screenshots und PR-Link dokumentieren
-- [x] CI-Badge in der README ergänzen und PR mergen
+- [x] CI-Badge in der README ergänzen
 
 ### 1 – Werkzeuge installieren und Ausgangszustand prüfen
 
@@ -381,13 +397,11 @@ ruff check . && ruff format --check . && python -m pytest --cov=app --cov-report
 
 
 ---
-## Woche 6 – Continuous Deployment
+## Woche 06 – Continuous Deployment
 
 Anleitung: [Deployment-Runbook](DEPLOYMENT.md) ·
 Live-App: https://expenses-dsjj.onrender.com ·
 Nachweise: [screenshots/](screenshots/)
-
-### Erledigt
 
 - [x] Render-Blueprint mit Docker, Branch `main`, Port 8000 und Healthcheck `/health` eingerichtet.
 - [x] In-Memory ohne `DATABASE_URL` und mit einem Gunicorn-Worker gewählt; Datenverlust bei Neustarts dokumentiert.
@@ -399,28 +413,439 @@ Nachweise: [screenshots/](screenshots/)
 - [x] CD unter `.github/workflows/cd.yml` eingerichtet: nach erfolgreicher CI auf `main` bzw. manuell auslösbar.
 - [x] Deploy-Hook als GitHub Secret und `APP_URL` als Variable hinterlegt; Render-Autodeploy deaktiviert.
 - [x] Cold Start beobachtet und Rollback mit anschliessender Wiederherstellung geprüft (Ergebnisse unten).
-- [x] `.env.example` angelegt; lokale `.env` ist ignoriert. Ergänzungen unten noch offen.
+- [x] `.env.example` mit Projektwerten angelegt und ergänzt; lokale `.env` ist ignoriert.
 - [x] `DEPLOYMENT.md` mit Abschnitten A–H geschrieben; vier beobachtete Fehlerbilder sowie weitere mögliche Störungen dokumentiert.
 - [x] Lokale Installation nach Abschnitt B in separatem Testordner durchlaufen; laut eigener Rückmeldung getestet.
 - [x] Lokale Portangaben auf 8000 vereinheitlicht; Compose auf `8000:8000` umgestellt und laut eigener Rückmeldung getestet.
 - [x] Öffentliche Versionsausgabe bestätigt: HTTP 200 mit `{"status":"ok","version":"1.0.0"}`.
 - [x] Vier Screenshots gesichert; [Healthcheck-Nachweis](screenshots/w6_healthcheck.png) im Runbook verlinkt.
+- [x] README für Woche 6 aktualisiert: Render-URL, CI/CD, Versionsausgabe und `.env.example` dokumentiert; `/ready` als implementiert gekennzeichnet.
+- [x] `.env.example` um `PORT`, `GUNICORN_WORKERS` und Postgres-Beispiel für `expenses` ergänzt.
 
-### Prüfergebnisse
+### 1 – Öffentliche Instanz prüfen
 
-| Prüfung | Ergebnis |
-|---|---|
-| Lokale Codeprüfung (11.11.2026) | Ruff-Lint und Formatierung grün, 45 Tests bestanden, Coverage 81,68 % (Vorgabe 80 %) |
-| Cold Start (11.11.2026) | Erster Aufruf 23,398553 s, direkt danach 0,160756 s; beide HTTP 200 |
-| Rollback (11.11.2026) | `b8b39ba` → `4c0a451` → `b8b39ba`; Smoke-Test nach Rollback und Wiederherstellung bestanden |
-| Konfigurations-Deployment (13.11.2026) | CD #3 erfolgreich nach 8 min 13 s; anschliessend `/health` mit Version `1.0.0` bestätigt |
+```bash
+curl -i https://expenses-dsjj.onrender.com/health
+curl -i https://expenses-dsjj.onrender.com/api/expenses
+```
 
-### Noch offen
+**Ergebnis:** HTTP 200 bei Healthcheck und Listenabruf; anfangs Status `ok` und leere Liste.
 
-- [ ] README aktualisieren: Render-URL, CI/CD-Ablauf, Versionsausgabe und vorhandene `.env.example` beschreiben; `/ready` nicht mehr als geplant aufführen.
-- [ ] `.env.example` vervollständigen: `PORT`, `GUNICORN_WORKERS` und Postgres-Beispiel für `expenses` statt `taskboard`.
-- [ ] Runbook bereinigen: übrige Voraussetzungen-Platzhalter entfernen; Kubernetes bis Woche 8 als Ausblick kennzeichnen; „still in progress“ entfernen.
-- [ ] ToDo, README, Runbook, Portänderung und Screenshots committen und per PR integrieren; danach CI/CD prüfen. Runbook-Commit: `docs: add deployment runbook`.
-- [ ] Empfohlene Ergänzung: automatisierte `/ready`-Tests für verfügbares (200) und nicht verfügbares Repository (503).
+### 2 – Gültige Ausgabe anlegen und lesen
+
+```bash
+curl -i -X POST https://expenses-dsjj.onrender.com/api/expenses \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Deployment-Test","amount":"12.50","date":"2026-11-08","category":"Other"}'
+curl -i https://expenses-dsjj.onrender.com/api/expenses
+```
+
+**Ergebnis:** POST 201, GET 200; Ausgabe mit Kategorie `Other` in der Liste.
+
+### 3 – Ungültige Kategorie testen
+
+```bash
+curl -i -X POST https://expenses-dsjj.onrender.com/api/expenses \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Deployment-Test","amount":"12.50","date":"2026-11-08","category":"Test"}'
+curl -i https://expenses-dsjj.onrender.com/api/expenses
+```
+
+**Ergebnis:** POST 400 bei Kategorie `Test`; kein neuer Eintrag gespeichert.
+
+### 4 – Testausgabe löschen und Liste prüfen
+
+```bash
+curl -i -X DELETE https://expenses-dsjj.onrender.com/api/expenses/1
+curl -i https://expenses-dsjj.onrender.com/api/expenses
+```
+
+**Ergebnis:** DELETE 200; anschliessend leere Liste. Die ID `1` stammt aus dem Testlauf; beim Wiederholen tatsächliche ID verwenden.
+
+### 5 – Lokaler Server (Projektordner, aktive `.venv`)
+
+```bash
+python -m flask --app wsgi:app run --port 8000
+```
+
+**Ergebnis:** Flask läuft auf Port 8000; Terminal geöffnet lassen.
+
+### 6 – Lokaler Smoke-Test (zweites Terminal im Projektordner)
+
+```bash
+bash scripts/smoke-test.sh http://127.0.0.1:8000
+```
+
+**Ergebnis:** `SMOKE TEST PASSED`.
+
+### 7 – Öffentlicher Smoke-Test – direkter Skriptaufruf
+
+```bash
+./scripts/smoke-test.sh https://expenses-dsjj.onrender.com
+```
+
+**Ergebnis:** `SMOKE TEST PASSED`; direkter Aufruf setzt Ausführungsrechte voraus, alternativ den untenstehenden Bash-Aufruf nutzen.
+
+### 8 – Cold Start – zweimal nach Inaktivität bzw. direkt danach (11.11.2026)
+
+```bash
+curl -sS -w '\nHTTP: %{http_code}\nDauer: %{time_total}s\n' \
+  https://expenses-dsjj.onrender.com/health
+```
+
+**Ergebnis:** HTTP 200; erster Aufruf 23,398553 s, zweiter 0,160756 s.
+
+### 9 – Rollback und Wiederherstellung (11.11.2026)
+
+```bash
+bash scripts/smoke-test.sh https://expenses-dsjj.onrender.com
+```
+
+**Ergebnis:** In Render Rollback `b8b39ba` → `4c0a451`, danach Manual Deploy → Deploy latest commit zurück auf `b8b39ba`; Smoke-Test jeweils bestanden.
+
+### 10 – Health-Erweiterung lokal prüfen (aktive `.venv`)
+
+```bash
+ruff check app/routes.py tests/test_health.py
+ruff format app/routes.py tests/test_health.py
+python -m pytest tests/test_health.py -v
+```
+
+**Ergebnis:** Lint und Formatierung erfolgreich; Health-Test: `1 passed`.
+
+### 11 – LOG_LEVEL prüfen (aktive `.venv`)
+
+```bash
+LOG_LEVEL=DEBUG python -c 'from app import create_app; print(create_app().logger.getEffectiveLevel())'
+```
+
+**Ergebnis:** Ausgabe `10` entspricht `DEBUG` im Flask-App-Logger.
+
+### 12 – Gesamtprüfung vor Commit (aktive `.venv`, 11.11.2026)
+
+```bash
+ruff check .
+ruff format --check .
+python -m pytest --cov=app --cov-report=term-missing
+```
+
+**Ergebnis:** Ruff-Lint und Formatprüfung grün; 45 Tests bestanden, Coverage 81,68 % bei Vorgabe 80 %.
+
+### 13 – Runbook-Test vorbereiten (neues Terminal, bisherige `.venv` deaktivieren)
+
+```bash
+mkdir -p /tmp/devops-runbook-check
+cd /tmp/devops-runbook-check
+```
+
+**Ergebnis:** Separates Testverzeichnis vorbereitet; Installation aus Teil B anschliessend laut eigener Rückmeldung erfolgreich getestet.
+
+### 14 – Formatkorrektur nach Ruff-Meldung
+
+```bash
+ruff format app/__init__.py
+ruff format --check .
+```
+
+**Ergebnis:** Datei korrigiert; `13 files already formatted`.
+
+### 15 – Versionsausgabe nach Konfigurations-Deployment (13.11.2026)
+
+```bash
+curl -i --max-time 90 https://expenses-dsjj.onrender.com/health
+```
+
+**Ergebnis:** CD #3 erfolgreich nach 8 min 13 s; HTTP 200 mit `{"status":"ok","version":"1.0.0"}`.
+
+### 16 – Codeänderungen veröffentlichen (Feature-Branch)
+
+```bash
+git add app/__init__.py app/routes.py tests/test_health.py
+git diff --cached
+git commit -m "feat: expose app version and configure log level"
+git push -u origin feature/render-deployment
+```
+
+**Ergebnis:** Commit `234d10f`; anschliessend per PR integriert, vier CI-Checks und CD erfolgreich. Historischer Branch, für neue Arbeit aktuellen Branch verwenden.
 
 **Betrieb:** Flask und Compose verwenden lokal beide Port 8000 und laufen daher abwechselnd. Render verwendet In-Memory mit einem Worker; eine Cloud-Datenbank ist aktuell nicht eingerichtet. Kubernetes folgt in Woche 8.
+
+---
+## Woche 7 – Infrastructure as Code (Terraform)
+
+Anleitung: [Terraform-README](terraform-expenses/README.md) ·
+Nachweise: [Plan 1](terraform-expenses/plan_screenshot1.png) /
+[Plan 2](terraform-expenses/plan-screenshot2.png)
+
+**Umfang:** Lokale Docker-Infrastruktur für die Ausgabenverwaltung. Der
+Render-Service bleibt separat; keine Python-`.venv` erforderlich.
+
+- [x] Terraform und Docker eingerichtet; Projektbranch `feature/terraform` angelegt.
+- [x] `terraform-expenses/` mit `main.tf`, `variables.tf`, `outputs.tf`, README und `.gitignore` erstellt.
+- [x] Terraform ab 1.5 und Provider `kreuzwerker/docker` mit `~> 3.0` konfiguriert; Lockdatei hält Provider 3.9.0 fest.
+- [x] Eigenes Image `expenses:local` gebaut; Container über `docker_image.expenses.image_id` damit verbunden.
+- [x] Container `expenses`, Netzwerk `expenses-net` und Volume `expenses-data` deklariert.
+- [x] Host-Port mit Default 8000 und Validierung 1025–65535 definiert; Container-Port bleibt 8000.
+- [x] `APP_VERSION`, `LOG_LEVEL` und leere `DATABASE_URL` gesetzt; Image-Standard ist ein Gunicorn-Worker.
+- [x] In-Memory-Betrieb und Lern-Volume unter `/data` dokumentiert; Volume allein macht Ausgaben nicht persistent.
+- [x] Outputs für URL, Containername und ID sowie unkritische `terraform.tfvars.example` ergänzt.
+- [x] `init`, `fmt`, `validate`, `plan` und `apply` erfolgreich ausgeführt; API und Smoke-Test geprüft.
+- [x] Idempotenz, Drift-Erkennung, Wiederherstellung und Portvalidierung nachgewiesen (Ergebnisse unten).
+- [x] Testressourcen mit `destroy` entfernt; danach neuen Erstellungsplan für zwei Screenshots erzeugt. Keine Textdatei erforderlich.
+- [x] Git-Ausschlüsse geprüft: State, `.terraform/` und echte `.tfvars` ignoriert; Lockdatei und Nachweise dürfen versioniert werden.
+- [x] Projekt-README um Woche 7, Terraform-Verweis und Portkonflikt-Hinweis ergänzt.
+- [x] Terraform-README abschliessend korrigieren
+
+### 1 – Terraform installieren (macOS/Homebrew)
+
+```bash
+brew tap hashicorp/tap
+brew install hashicorp/tap/terraform
+terraform version
+```
+
+**Ergebnis:** Installation und Versionsprüfung durchgeführt.
+
+### 2 – Arbeitsordner und Dateien vorbereiten (vom Projekt-Hauptordner)
+
+```bash
+mkdir -p terraform-expenses
+cd terraform-expenses
+touch main.tf variables.tf outputs.tf README.md
+```
+
+**Ergebnis:** Ordner und Dateien erstellt. Früheren Tippfehler `cd terraform` auf `cd terraform-expenses` korrigiert.
+
+### 3 – Docker prüfen und Image bauen (vom Projekt-Hauptordner)
+
+```bash
+cd terraform-expenses
+docker info >/dev/null && echo "Docker läuft"
+docker build -t expenses:local ..
+docker images expenses:local
+```
+
+**Ergebnis:** Docker läuft; `expenses:local` erfolgreich gebaut und lokal vorhanden.
+
+### 4 – Initialisieren, formatieren und validieren (Terraform-Ordner)
+
+```bash
+terraform init
+terraform fmt
+terraform validate
+```
+
+**Ergebnis:** Provider 3.9.0 aus Lockdatei verwendet; `Success! The configuration is valid.`
+
+### 5 – Erstellungsplan
+
+```bash
+terraform plan
+```
+
+**Ergebnis:** `Plan: 4 to add, 0 to change, 0 to destroy.`
+
+### 6 – Plan anwenden (mit `yes` bestätigen)
+
+```bash
+terraform apply
+```
+
+**Ergebnis:** `4 added, 0 changed, 0 destroyed`; URL `http://localhost:8000`, Containername `expenses` und Container-ID ausgegeben.
+
+### 7 – Laufende API prüfen
+
+```bash
+curl -i http://localhost:8000/health
+bash ../scripts/smoke-test.sh http://localhost:8000
+```
+
+**Ergebnis:** HTTP 200 mit Version `1.0.0-iac`; `SMOKE TEST PASSED`.
+
+### 8 – Idempotenz
+
+```bash
+terraform plan
+```
+
+**Ergebnis:** `No changes. Your infrastructure matches the configuration.`
+
+### 9 – Drift absichtlich erzeugen
+
+```bash
+docker rm -f expenses
+terraform plan
+```
+
+**Ergebnis:** Container gelöscht; `Plan: 1 to add, 0 to change, 0 to destroy.`
+
+### 10 – Sollzustand wiederherstellen (mit `yes` bestätigen)
+
+```bash
+terraform apply
+```
+
+**Ergebnis:** `1 added, 0 changed, 0 destroyed`.
+
+### 11 – Wiederhergestellte App prüfen
+
+```bash
+bash ../scripts/smoke-test.sh http://localhost:8000
+```
+
+**Ergebnis:** `SMOKE TEST PASSED`.
+
+### 12 – Portvalidierung
+
+```bash
+terraform plan -var="host_port=80"
+```
+
+**Ergebnis:** `Invalid value for variable`; erlaubter Bereich 1025–65535; keine Änderungen ausgeführt.
+
+### 13 – Aufräumen (mit `yes` bestätigen)
+
+```bash
+terraform destroy
+```
+
+**Ergebnis:** `Destroy complete! Resources: 4 destroyed.`; Volume gelöscht, Image bleibt lokal.
+
+### 14 – Git-Ausschlüsse prüfen
+
+```bash
+git status --short --untracked-files=all .
+git check-ignore .terraform terraform.tfstate terraform.tfstate.backup terraform.tfvars
+```
+
+**Ergebnis:** State, Provider-Ordner und echte `.tfvars` ignoriert; Quelldateien, Lockdatei und Screenshots dürfen versioniert werden.
+
+### 15 – State und Outputs nachschlagen (nach `apply`)
+
+```bash
+terraform state list
+terraform output
+```
+
+**Ergebnis:** Zeigt verwaltete Ressourcenadressen bzw. URL, Containername und ID; zusätzliche Nachschlagebefehle, kein separater Testnachweis.
+
+### 16 – Plan-Nachweis nach Aufräumen
+
+```bash
+terraform plan
+```
+
+**Ergebnis:** Vier neue Ressourcen geplant; zwei Screenshots gesichert, kein erneutes `apply` nötig.
+
+**Merksatz:** Konfiguration beschreibt den Sollzustand, der Plan zeigt Änderungen,
+`apply` setzt sie um. Der State ordnet Terraform-Ressourcen realen Docker-Objekten zu.
+
+
+## Hausübung W7 – nginx-Webserver mit Terraform
+
+
+### Erledigte Hausübungs-ToDos
+
+Anleitung: [nginx-README](terraform/README.md) ·
+Nachweis: [Erstellungsplan](terraform/plan_screenshot.png)
+
+- [x] Separaten Ordner `terraform/` für die nginx-Hausübung anlegen; eigene `.tf`-Dateien, `index.html`, `.gitignore` und README darin ablegen.
+- [x] Vor `init` die Ausschlüsse einrichten: `.terraform/`, `*.tfstate*`, echte `*.tfvars`; `*.tfvars.example` darf versioniert werden. `.terraform.lock.hcl` ebenfalls versionieren.
+- [x] `terraform`-Block mit `required_version`, Provider `kreuzwerker/docker` mit `version = "~> 3.0"` und `provider "docker" {}` konfigurieren.
+- [x] `docker_image` für `nginx:alpine` und `docker_container` mit Referenz auf dieses Image definieren.
+- [x] Eigene `index.html` mit erkennbarem Text (Name / Woche 7) erstellen und nach `/usr/share/nginx/html/index.html` mounten; bei Bind-Mount absoluten Host-Pfad und `read_only = true` verwenden.
+- [x] Host-Port als Variable mit `type = number` und Validierung `> 1024` und `<= 65535` definieren; nginx lauscht standardmässig intern auf Port 80.
+- [x] Output für die vollständige URL aus Hostname und Host-Port ergänzen, z. B. `http://localhost:8080`.
+- [x] `terraform init`, `terraform fmt` und `terraform validate` ausführen; Dateien formatiert und `Success!` nachgewiesen.
+- [x] Erstellungsplan prüfen und Screenshot mit geplanten Ressourcen und `Plan: … to add …` als `terraform/plan_screenshot.png` sichern.
+- [x] `terraform apply` ausführen und mit `curl http://localhost:<port>/` prüfen, dass die eigene HTML-Seite statt der nginx-Standardseite erscheint; Output-URL kontrollieren.
+- [x] `terraform plan -var="host_port=80"` ausführen: Ablehnung mit der eigenen Validierungsmeldung nachweisen.
+- [x] Kurze `terraform/README.md` mit Voraussetzung (Docker läuft), Arbeitsverzeichnis und `init`, `apply`, Prüfung sowie `destroy` schreiben.
+- [x] Mit `terraform destroy` aufräumen; vor dem Commit prüfen, dass keine State-Dateien, Provider-Caches oder echten Secrets versioniert werden.
+
+**Prüfstand:** Zwei Ressourcen erstellt, eigene HTML-Seite mit HTTP 200 geprüft,
+Port 80 wie erwartet abgelehnt und Testumgebung wieder mit `destroy` aufgeräumt.
+Dateien sind vorgemerkt; Commit, Push und PR-Abschluss bleiben oben offen.
+
+### 1 – Ordner und Dateien vorbereiten
+
+Im Projekt-Hauptverzeichnis:
+
+```bash
+mkdir -p terraform
+cd terraform
+```
+
+`.gitignore` anlegen und die Dateien vorbereiten:
+
+- `main.tf`: Terraform-Konfiguration, Provider, nginx-Image und Container
+- `variables.tf`: Host-Port mit Standardwert und Validierung
+- `index.html`: eigene Webseite
+- `outputs.tf`: URL des Webservers
+
+### 2 – Terraform vorbereiten und Dateien prüfen
+
+Danach im Ordner `terraform/` ausführen:
+
+```bash
+terraform init
+terraform fmt
+terraform validate
+```
+
+**Ergebnis:** `Success! The configuration is valid.`
+
+### 3 – Erstellungsplan prüfen
+
+```bash
+terraform plan
+```
+
+**Ergebnis:** `Plan: 2 to add, 0 to change, 0 to destroy.`
+
+### 4 – Webserver erstellen
+
+```bash
+terraform apply
+```
+
+Mit `yes` bestätigen.
+
+**Ergebnis:**
+
+```text
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+
+Outputs:
+web_url = "http://localhost:8080"
+```
+
+### 5 – Eigene HTML-Seite prüfen
+
+```bash
+curl -i http://localhost:8080/
+```
+
+**Ergebnis:** HTTP 200 und Inhalt der eigenen `index.html`.
+Die Adresse kann auch im Browser geöffnet werden.
+
+### 6 – Portvalidierung prüfen
+
+```bash
+terraform plan -var="host_port=80"
+```
+
+**Ergebnis:** Beabsichtigte Ablehnung:
+
+```text
+Error: Invalid value for variable
+host_port must be between 1025 and 65535.
+```
+
+### 7 – Aufräumen
+
+```bash
+terraform destroy
+```
+
+>Container und Terraform-Image-Verwaltung werden entfernt. Das lokale Image bleibt wegen `keep_locally = true` erhalten. Die eingebundene `index.html` bleibt ebenfalls erhalten.

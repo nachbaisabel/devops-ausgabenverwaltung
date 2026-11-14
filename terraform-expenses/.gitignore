@@ -1,0 +1,30 @@
+# --- Terraform ---------------------------------------------------------------
+
+# copied from course materials 'woche-07-infrastructure-as-code/code'
+
+# Working directory: downloaded providers, modules and the plugin cache.
+.terraform/
+
+# State files. The state holds the full picture of your infrastructure -
+# INCLUDING secrets in plain text. It must never be committed.
+*.tfstate
+*.tfstate.*
+
+# Crash log written by Terraform when the CLI panics.
+crash.log
+crash.*.log
+
+# Variable files may carry secrets or environment-specific values.
+# The committed template is *.tfvars.example (not matched by *.tfvars).
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+
+# Local override files are meant for personal, uncommitted tweaks.
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# NOTE: .terraform.lock.hcl is intentionally NOT ignored. Commit it so that
+# everyone (and CI) resolves the exact same provider versions and checksums.

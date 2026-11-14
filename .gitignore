@@ -225,3 +225,6 @@ __marimo__/
 # Local environment configuration
 .env.*
 !.env.example
+
+# terraform state
+*.tfstate*
