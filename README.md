@@ -8,12 +8,15 @@ Datum zu erfassen und nach Monat und Kategorie auszuwerten.
 **Warum dieses Projekt?** Das Semesterprojekt im Modul CDS212 weist eine
 vollständige DevOps-Kette von der Versionsverwaltung über Tests und Deployment
 bis zum Monitoring nach. Der fachliche Umfang bleibt bewusst klein.
+---
+**Stand: Woche 6.**  Die Ausgaben-API läuft lokal mit Flask oder über Docker
+Compose mit Postgres sowie öffentlich auf Render. GitHub Actions prüft Lint,
+Formatierung, Tests und Docker-Build. Nach erfolgreicher CI auf `main`
+startet das Deployment mit anschliessendem Smoke-Test.
 
-**Stand: Woche 4.** Die App läuft mit Gunicorn als Nicht-root-Benutzer im
-Container. Docker Compose startet App und Postgres; Ausgaben lassen sich
-erfassen, auflisten, ändern und löschen. Die Speicherung über einen
-Compose-Neustart wurde geprüft. Alle 14 lokalen Tests bestehen; sie verwenden
-den In-Memory-Speicher. Die Auswertungen folgen.
+Lokal wurden zuletzt 45 Tests mit 81,68 % Coverage bestanden.
+Auf Render wird aktuell In-Memory mit einem Worker verwendet.
+Die Auswertungen nach Monat und Kategorie folgen.
 
 ---
 ## Geplanter Funktionsumfang (MVP)
@@ -52,13 +55,13 @@ docker compose up --build -d
 docker compose ps
 ```
 
-Die API ist unter `http://localhost:8002` erreichbar. Der App-Prozess läuft im
+Die API ist unter `http://localhost:8000` erreichbar. Der App-Prozess läuft im
 Container auf Port 8000. Compose wartet auf den Datenbank-Healthcheck; bei
 `health: starting` kurz warten und den Status erneut prüfen.
 
 ```bash
-curl http://localhost:8002/health
-curl http://localhost:8002/api/expenses
+curl http://localhost:8000/health
+curl http://localhost:8000/api/expenses
 docker compose logs --tail=30 web
 ```
 
@@ -79,10 +82,24 @@ Beim ersten Einrichten im Projektordner eine virtuelle Umgebung erstellen:
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements-dev.txt
-python wsgi.py
+
+unset DATABASE_URL
+export APP_VERSION=1.0.0-local
+export LOG_LEVEL=INFO
+
+python -m flask --app wsgi:app run --host 127.0.0.1 --port 8000
 ```
 
-Prüfaufruf: `http://127.0.0.1:8000/health`; erwartet wird `{"status": "ok"}`.
+Prüfaufruf im zweiten Terminal: `curl -i http://127.0.0.1:8000/health`.
+Erwartet: HTTP 200 und `{"status":"ok","version":"1.0.0-local"}`.
+
+Falls Port 8000 bereits belegt ist, zuerst die andere lokale Instanz beenden oder auf einen anderen Port ausweichen.
+Die Schritte dazu stehen unter
+[Lokale Installation im Runbook](DEPLOYMENT.md#b---lokale-installation).
+
+Flask und Docker Compose verwenden beide Host-Port 8000 und müssen daher
+abwechselnd betrieben werden.
+
 Die Umgebung in jedem neuen Terminal mit `source .venv/bin/activate` aktivieren.
 Mit `deactivate` wird sie wieder verlassen. `.venv` wird nicht in Git gespeichert.
 
@@ -103,24 +120,36 @@ die manuellen Datenbankprüfungen stehen in [ToDo.md](ToDo.md).
 
 ```text
 devops-ausgabenverwaltung/
+├── .github/workflows/
+│   ├── ci.yml            # Lint, Formatierung, Tests und Docker-Build
+│   └── cd.yml            # Render-Deployment und Smoke-Test
 ├── app/
 │   ├── __init__.py       # Erstellt die Flask-App und verbindet die Bausteine
 │   ├── routes.py         # HTTP-Endpunkte: Anfragen annehmen und beantworten
 │   ├── models.py         # Expense-Datenmodell und Validierungsfunktionen
 │   └── repository.py     # Ausgaben speichern, IDs vergeben und Daten abrufen
+├── screenshots/          # Nachweise
+├── scripts/
+│   └── smoke-test.sh     # Prüft die laufende API
 ├── tests/
 │   ├── conftest.py       # Gemeinsamer Testclient
 │   ├── test_health.py    # Prüft /health
 │   └── test_expenses.py  # Prüft Ausgaben und Fehlerfälle
-├── Dockerfile            # Multi-Stage-Image mit Gunicorn und appuser
-├── .dockerignore         # Schliesst lokale Dateien vom Build-Kontext aus
+│   ├── test_models.py    # Tests der Eingabevalidierung
+├── .dockerignore         # Schliesst lokale Dateien und Secrets vom Docker-Build-Kontext aus
+├── .env.example          # Unkritische Beispielkonfiguration
+├── .gitignore            # Verhindert das versehentliche Versionieren lokaler Dateien und Secrets
+├── CONTRIBUTING.md       # Regelwerk & Arbeitsweise
+├── DEPLOYMENT.md         # Installation, Deployment und Störungsbehandlung
 ├── docker-compose.yml    # App, Postgres, Netzwerk und Datenbank-Volume
-├── ToDo.md               # Wochenfortschritt und manuelle Prüfungen
-├── wsgi.py               # Einstiegspunkt zum Starten der Anwendung
+├── Dockerfile            # Multi-Stage-Image mit Gunicorn und appuser
+├── pyproject.toml        # Ruff-, pytest- und Coverage-Konfiguration
+├── README.md
+├── render.yaml           # Render-Blueprint
 ├── requirements.txt      # Abhängigkeiten der Anwendung
 ├── requirements-dev.txt  # Zusätzliche Entwicklungswerkzeuge, z.B. pytest
-├── README.md
-└── CONTRIBUTING.md       # Regelwerk & Arbeitsweise
+├── ToDo.md               # Wochenfortschritt und manuelle Prüfungen
+└── wsgi.py               # Einstiegspunkt zum Starten der Anwendung
 ```
 
 ### Wie hängen die Dateien zusammen?
@@ -150,20 +179,20 @@ Beträge werden intern als `Decimal`, Datumswerte als `date` verarbeitet.
 
 ## Endpunkte
 
-`/health` und die Ausgaben-Endpunkte sind implementiert. 
-`/`, `/ready`,`/metrics` und `/api/expenses/stats` sind noch geplant.
+`/health`, `/ready` und die Ausgaben-Endpunkte sind implementiert.
+`/`, `/metrics` und `/api/expenses/stats` sind noch geplant.
 
 | Methode | Pfad | Zweck |
 |---|---|---|
-| `GET` | `/` | Einfache HTML-Oberfläche |
-| `GET` | `/health` | Liveness: läuft die App? Ohne Datenbankzugriff |
+| `GET` | `/` | Geplant: Einfache HTML-Oberfläche |
+| `GET` | `/health` | Liveness mit Versionsausgabe, ohne Datenbankzugriff |
 | `GET` | `/ready` | Readiness: ist die App bereit? Prüft bei konfigurierter Datenbank deren Erreichbarkeit |
-| `GET` | `/metrics` | Metriken |
+| `GET` | `/metrics` | Geplant: Metriken |
 | `GET` | `/api/expenses` | Gespeicherte Ausgaben auflisten |
 | `POST` | `/api/expenses` | Ausgabe mit Titel, Betrag, Kategorie und Datum erfassen; Beschreibung optional |
 | `PUT` | `/api/expenses/<id>` | Ausgabe bearbeiten |
 | `DELETE` | `/api/expenses/<id>` | Ausgabe löschen |
-| `GET` | `/api/expenses/stats` | Statistiken & Übersichten |
+| `GET` | `/api/expenses/stats` | Geplant: Statistiken & Übersichten |
 
 ---
 
@@ -173,7 +202,7 @@ Beträge werden als Dezimalstrings mit höchstens zwei Nachkommastellen gesendet
 und mit zwei Nachkommastellen zurückgegeben. Das Datum hat das Format `YYYY-MM-DD`.
 
 ```bash
-curl -i -X POST http://localhost:8002/api/expenses \
+curl -i -X POST http://localhost:8000/api/expenses \
   -H "Content-Type: application/json" \
   -d '{"title":"Mittagessen","amount":"12.50","date":"2026-11-06","category":"Food"}'
 ```
@@ -190,24 +219,51 @@ Kategorien stehen in `app/models.py`.
 | `DATABASE_URL` | lokal leer; in Compose gesetzt | Leer: In-Memory; gesetzt: PostgreSQL |
 | `POSTGRES_PASSWORD` | `changeme` als lokale Übungsvorgabe | Compose verwendet denselben Wert für Datenbank und Verbindungsadresse |
 | `GUNICORN_WORKERS` | `1` | Anzahl der Gunicorn-Worker im Container |
-| `APP_VERSION` | Dockerfile: `0.0.0-dev`; Compose-Build: `1.0.0-local` | Im Image gesetzt; Ausgabe in `/health` und Metriken noch geplant |
-| `LOG_LEVEL` | in Compose `INFO` | Auswertung durch den Anwendungscode noch geplant |
+| `APP_VERSION` | App/Docker: `0.0.0-dev`; Compose: `1.0.0-local`; Render: `1.0.0` | Versionsausgabe in `/health` |
+| `LOG_LEVEL` | `INFO` | Steuert das Logging-Level des Flask-App-Loggers |
+| `PORT` | Render: `8000` | Passend zum fest auf Port 8000 gestarteten Gunicorn gesetzt |
 
 Die Datei `.env` sowie Zugangsdaten und Tokens gehören nie ins Repository.
-Eine `.env.example` ist noch geplant und soll nur Platzhalter und unkritische
-Beispielwerte enthalten. `changeme` ist nur für die lokale Übung vorgesehen.
+
+Die vorhandene `.env.example` enthält unkritische Beispielwerte.
+Die lokale `.env` und echte Zugangsdaten gehören nie ins Repository.
+Docker Compose liest `.env` automatisch; der direkte Flask-Start lädt sie im aktuellen Projekt nicht automatisch. `changeme` ist nur ein lokaler Übungswert.
+
+Die vollständige Variablen- und Secrets-Tabelle steht in
+[DEPLOYMENT.md](DEPLOYMENT.md#c---konfiguration-und-secrets).
 
 ---
+## Deployment auf Render
 
+Öffentliche Instanz: https://expenses-dsjj.onrender.com
+
+Die Einrichtung erfolgt über den Blueprint `render.yaml`.
+Nach erfolgreicher CI auf `main` löst GitHub Actions das Deployment über einen geheimen Render-Deploy-Hook aus und führt den Smoke-Test aus.
+Ein manueller Start des CD-Workflows ist ebenfalls möglich.
+
+```bash
+bash scripts/smoke-test.sh https://expenses-dsjj.onrender.com
+```
+
+Erwartet: `SMOKE TEST PASSED`.
+
+Render verwendet aktuell In-Memory-Speicherung mit einem Worker.
+Ausgaben gehen bei einem Neustart verloren. Nach längerer Inaktivität kann der erste Aufruf wegen eines Cold Starts länger dauern.
+
+Einrichtung, Verifikation, Rollback und Troubleshooting:
+[Deployment-Runbook](DEPLOYMENT.md).
+
+---
 ## Weiterführende Dokumentation
 
 - [CONTRIBUTING.md](CONTRIBUTING.md): GitHub Flow, Commit-Regeln und PR-Selbstprüfung.
-- [ToDo.md](ToDo.md): Projektfortschritt, Git-Ablauf sowie Start- und Testbefehle aus Woche 2–4.
+- [DEPLOYMENT.md](DEPLOYMENT.md): Runbook für Installation, Konfiguration, Deployment, Rollback und Troubleshooting.
+
+- [ToDo.md](ToDo.md): Projektfortschritt, Git-Ablauf sowie Start- und Testbefehle von allen Wochen.
 
 Im weiteren Kursverlauf entstehen:
 
 - `docs/architektur.md`: C4-Architekturübersicht und Entscheidungen.
-- `DEPLOYMENT.md`: Runbook für Deployment, Rollback und Störungen (Woche 6).
 - `MONITORING.md`: Metriken, Dashboard und Schwellwerte (Woche 9).
 - `docs/adr/`: begründete Architekturentscheidungen.
 - `BEWERTUNG.md`: Selbsteinschätzung vor der Abgabe.
@@ -222,7 +278,7 @@ Für `main` ist eine Branch Protection Rule eingerichtet: Änderungen erfolgen
 über Feature-Branches und Pull Requests; direkte Pushes sind auch für mich als
 Administrator gesperrt. Force-Pushes und das Löschen von `main` sind deaktiviert.
 
-Mit den folgenden Einstellungen wird sichergestellt, dass kein fehlerhafter Code in den Hauptzweig gelangt:
+Die folgenden Einstellungen verhindern einen Merge bei fehlgeschlagenen Pflichtprüfungen:
 - **Require a pull request before merging** – kein direkter Push auf `main`;
   Änderungen laufen über einen PR.
 - **Require status checks to pass before merging** – benannte Checks müssen grün sein, sonst ist der Merge-Knopf gesperrt:
