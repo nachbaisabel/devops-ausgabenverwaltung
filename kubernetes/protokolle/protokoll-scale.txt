@@ -1,0 +1,11 @@
+# Declarative scaling to 3 replicas
+Fri Nov 20 14:09:16 CET 2026
+deployment.apps/expenses configured
+Waiting for deployment "expenses" rollout to finish: 1 of 3 updated replicas are available...
+Waiting for deployment "expenses" rollout to finish: 2 of 3 updated replicas are available...
+deployment "expenses" successfully rolled out
+
+NAME                        READY   STATUS    RESTARTS   AGE    IP           NODE               NOMINATED NODE   READINESS GATES
+expenses-75674cdc6f-c9knb   1/1     Running   0          6s     10.244.2.3   expenses-worker    <none>           <none>
+expenses-75674cdc6f-ndnzb   1/1     Running   0          6s     10.244.2.4   expenses-worker    <none>           <none>
+expenses-75674cdc6f-p22xd   1/1     Running   0          156m   10.244.1.2   expenses-worker2   <none>           <none>

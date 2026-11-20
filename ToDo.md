@@ -16,7 +16,7 @@ Mein Kurs: **CDS212 – DevOps** · Mein Projekt: **Ausgabenverwaltung**
 - [ ] Woche 9
 - [ ] Woche 10
 
-**Aktuell: Woche 7 – Terraform-Dokumentation und PR abschliessen.**
+**Aktuell: Woche 8 – Kubernetes.**
 
 
 
@@ -34,7 +34,7 @@ Mein Kurs: **CDS212 – DevOps** · Mein Projekt: **Ausgabenverwaltung**
 
 ### Noch offen W6
 
-- [ ] Kubernetes-Platzhalter im Runbook bis Woche 8 durch einen kurzen Ausblick ersetzen.
+- [x] Kubernetes-Platzhalter im Runbook durch den getesteten kind-Ablauf für `expenses`, Kontrolle und Rollback ersetzen.
 - [ ] Abschliessenden CI/CD-Lauf zu PR #25 bestätigen; die zuvor erfolgreichen Läufe sind oben dokumentiert.
 - [ ] Empfohlene Ergänzung: automatisierte `/ready`-Tests für verfügbares (200) und nicht verfügbares Repository (503).
 
@@ -59,6 +59,7 @@ Zunächst wurde Conda verwendet; inzwischen erfolgt die lokale Entwicklung in `.
 - [x] GitHub Flow und Commit-/PR-Regeln in `CONTRIBUTING.md` dokumentiert.
 - [x] `main` gegen direkte Pushes geschützt; Änderungen über Branches und PRs integriert.
 
+---
 ### Git-Stand und Zugriff prüfen
 
 ```bash
@@ -101,6 +102,7 @@ git pull --ff-only
 - [x] Gemeinsamen Testclient in `tests/conftest.py` eingerichtet.
 - [x] 13 Ausgabentests und ein Health-Test bestanden; 14 Tests insgesamt.
 
+---
 Die folgenden Befehle zeigen den aktuellen Stand: `.venv` statt der anfänglich
 verwendeten Conda-Umgebung; 
 Beträge seit Woche 4 als Dezimalstrings statt Float und Daten als Date statt Strings.
@@ -161,7 +163,7 @@ geprüft.
 - [x] Persistenz nach `down` und erneutem Start nachweisen; Unterschied zu `down -v` erklären.
 - [x] README und Testabläufe dokumentieren; Optimierungen mit geschätzten Vergleichswerten begründen.
 
-
+---
 ### Dockerfile schreiben & testen
 ```bash
 docker build -t ausgabenverwaltung:local .
@@ -276,6 +278,7 @@ mit `-v` wurde für diese Projektprüfung nicht ausgeführt.
 - [x] Rote und grüne Checks mit Screenshots und PR-Link dokumentieren
 - [x] CI-Badge in der README ergänzen
 
+---
 ### 1 – Werkzeuge installieren und Ausgangszustand prüfen
 
 - virtuelle Umgebung aktivieren
@@ -424,6 +427,7 @@ Nachweise: [screenshots/](screenshots/)
 - [x] README für Woche 6 aktualisiert: Render-URL, CI/CD, Versionsausgabe und `.env.example` dokumentiert; `/ready` als implementiert gekennzeichnet.
 - [x] `.env.example` um `PORT`, `GUNICORN_WORKERS` und Postgres-Beispiel für `expenses` ergänzt.
 
+---
 ### 1 – Öffentliche Instanz prüfen
 
 ```bash
@@ -598,6 +602,7 @@ Render-Service bleibt separat; keine Python-`.venv` erforderlich.
 - [x] Projekt-README um Woche 7, Terraform-Verweis und Portkonflikt-Hinweis ergänzt.
 - [x] Terraform-README abschliessend korrigieren
 
+---
 ### 1 – Terraform installieren (macOS/Homebrew)
 
 ```bash
@@ -851,3 +856,364 @@ terraform destroy
 ```
 
 >Container und Terraform-Image-Verwaltung werden entfernt. Das lokale Image bleibt wegen `keep_locally = true` erhalten. Die eingebundene `index.html` bleibt ebenfalls erhalten.
+
+---
+## Woche 8 – Kubernetes
+
+**Ziel:** Die Ausgabenverwaltung lokal mit kind in Kubernetes betreiben,
+skalieren, ohne Ausfall aktualisieren und einen Rollback nachvollziehbar
+protokollieren. Der Render-Service bleibt davon unabhängig.
+
+### Vorbereitung und eigene Manifeste
+
+- [x] `kind` und `kubectl` installieren bzw. Versionen prüfen; Docker muss laufen.
+- [x] Kurs-Theorie 01–05 lesen und das Kubernetes-Labor vollständig durchführen.
+- [x] Branch für Woche 8 anlegen, z. B. `feature/kubernetes`.
+- [x] Verzeichnis `kubernetes/` mit `manifeste/` und `protokolle/` als Projektdokumentation anlegen.
+- [x] Eigenes Image `expenses:local` aus dem Projekt-Hauptverzeichnis bauen und in den kind-Cluster laden.
+- [x] Namespace für die Ausgabenverwaltung definieren und in allen Namespaced-Manifests verwenden.
+- [x] ConfigMap für mindestens `APP_VERSION` und `LOG_LEVEL` erstellen; keine echten Secrets committen.
+- [x] Deployment für das Image `expenses:local` erstellen: Port 8000, mindestens ein Replikat, Labels und passende Selektoren.
+- [x] Service erstellen: ClusterIP auf Service-Port 80 und `targetPort: 8000`; NodePort für den externen Nachweis ergänzen.
+- [x] Liveness-Probe auf `/health` und Readiness-Probe auf `/ready` konfigurieren und den Unterschied in der Analyse erklären.
+- [x] Sinnvolle `resources.requests`/`limits` sowie restriktiven `securityContext` setzen; bei `readOnlyRootFilesystem` beschreibbares `/tmp` über `emptyDir` bereitstellen.
+
+### Nachweise für die Hausübung
+
+- [x] Deployment anwenden und mit `kubectl rollout status` den erfolgreichen Start nachweisen.
+- [x] `/health` und `/ready` über den NodePort prüfen; erwartete Antworten sind HTTP 200, `status: ok` bzw. `status: ready`.
+- [x] Selbstheilung beobachten: einen Pod löschen und den automatisch erzeugten Ersatz-Pod beobachten.
+- [x] Auf genau drei Replikate skalieren und `kubectl get pods -o wide` als `kubernetes/protokolle/protokoll-scale.txt` sichern; drei Pods zeigen `Running`.
+- [x] Rolling Update mit neuem Image und geänderter `APP_VERSION` vorbereiten und durchführen.
+- [x] Zeitgestempelte curl-Schleife gegen den NodePort ausführen; finaler Nachweis ohne fehlgeschlagene Anfrage in `kubernetes/protokolle/protokoll-rollout.txt` sichern.
+- [x] `kubectl rollout status` zum Rollout-Protokoll ergänzen; Ausgabe bestätigt den erfolgreichen Rollout.
+- [x] Rollback mit `kubectl rollout history` und `kubectl rollout undo` ausführen; History und erfolgreichen Status in `kubernetes/protokolle/protokoll-rollback.txt` sichern.
+- [x] `kubernetes/analyse.md` schreiben: Zusammenspiel von Readiness-Probe und `maxUnavailable: 0`, zwei Endpunkte sowie Gefahr einer datenbankprüfenden Liveness-Probe erklären.
+- [x] Lokalen kind-Cluster nach allen Prüfungen mit `kind delete cluster --name expenses` entfernen.
+
+### Abschluss
+
+- [x] Manifeste, Textprotokolle und Analyse prüfen: keine echten Secrets, keine grossen Binärdateien und keine unklaren Platzhalter.
+- [x] README um einen kurzen Verweis auf `kubernetes/` und die lokale Kubernetes-Ausführung ergänzen.
+- [x] Optional: HPA mit metrics-server unter Last nachweisen und Ergebnis als `kubernetes/protokolle/protokoll-hpa.txt` sichern; Skalierung 3 → 4 und Rückgang auf 2 dokumentiert.
+
+---
+### Durchgeführter Ablauf und Befehle
+
+**Ablage:** Die produktnahen Kubernetes-Manifeste liegen in `kubernetes/manifeste/`.
+Die durchsuchbaren Nachweise liegen in `kubernetes/protokolle/`; `secret.yaml`
+bleibt durch `.gitignore` ausgeschlossen.
+
+#### 1 – Werkzeuge prüfen und kind-Cluster erstellen
+
+```bash
+docker info >/dev/null && echo "Docker läuft"
+kind version
+kubectl version --client
+
+cd kubernetes/manifeste
+kind create cluster --config kind-config.yaml
+kubectl config current-context
+kubectl get nodes
+```
+
+**Was es macht:** Erzeugt den Cluster `expenses` mit einer Control Plane und
+zwei Workern. `kind-expenses` ist danach der aktive kubectl-Kontext.
+
+**Erwartet:** Drei Knoten mit Status `Ready`.
+
+#### 2 – Eigenes Image bauen und in kind laden
+
+```bash
+docker build -t expenses:local --build-arg APP_VERSION=1.0.0 ../..
+kind load docker-image expenses:local --name expenses
+```
+
+**Was es macht:** Baut die Ausgabenverwaltung aus dem Projekt-Hauptordner und
+kopiert das lokale Image in die eigenen Image-Ablagen der kind-Knoten.
+
+**Erwartet:** Das Image wird auf Control Plane und beide Worker geladen; ohne
+`kind load` würde der Pod mit `ErrImagePull` scheitern.
+
+#### 3 – Namespace, Konfiguration, Deployment und Service anwenden
+
+```bash
+kubectl apply -f namespace.yaml
+kubectl apply -f configmap.yaml
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+kubectl -n expenses rollout status deployment/expenses
+kubectl -n expenses get deployment,pods,service
+```
+
+**Was es macht:** Erstellt den Namespace, die nicht-geheime Konfiguration, das
+Deployment und den internen ClusterIP-Service. Das Secret bleibt absichtlich
+unverwendet, weil die App im Labor ohne Datenbank läuft.
+
+**Ergebnis:** Deployment `1/1`, ein Pod `1/1 Running` und ein ClusterIP-Service
+auf Port 80.
+
+#### 4 – Endpunkte und Selbstheilung prüfen
+
+```bash
+kubectl -n expenses port-forward service/expenses 8080:80
+```
+
+In einem zweiten Terminal:
+
+```bash
+curl -i http://localhost:8080/health
+curl -i http://localhost:8080/ready
+```
+
+`port-forward` danach mit `Ctrl+C` beenden. Selbstheilung prüfen:
+
+```bash
+kubectl -n expenses get pods
+kubectl -n expenses delete pod -l app=expenses
+kubectl -n expenses get pods -w
+```
+
+**Was es macht:** `/health` prüft den Prozess, `/ready` die Bedienbarkeit.
+Nach dem Löschen erzeugt das ReplicaSet automatisch einen neuen Pod mit anderem
+Namen. Die Beobachtung mit `Ctrl+C` beenden.
+
+#### 5 – NodePort für externe Nachweise erstellen
+
+```bash
+kubectl apply -f kubernetes/manifeste/service-nodeport.yaml
+curl -i http://localhost:30080/health
+curl -i http://localhost:30080/ready
+```
+
+**Was es macht:** Der NodePort bleibt auch beim Ersetzen einzelner Pods
+erreichbar und ist deshalb für den Rollout-Nachweis geeigneter als
+`port-forward`.
+
+**Ergebnis:** Beide Endpunkte liefern HTTP 200.
+
+#### 6 – Hausübung Teil 1 und 2: deklarativ auf drei Pods skalieren
+
+In `kubernetes/manifeste/deployment.yaml`:
+
+```yaml
+replicas: 3
+```
+
+Danach im Projekt-Hauptordner:
+
+```bash
+{
+  echo "# Declarative scaling to 3 replicas"
+  date
+  kubectl apply -f kubernetes/manifeste/deployment.yaml
+  kubectl -n expenses rollout status deployment/expenses
+  echo
+  kubectl -n expenses get pods -o wide
+} | tee kubernetes/protokolle/protokoll-scale.txt
+```
+
+**Was es macht:** Die gewünschte Anzahl steht dauerhaft im Manifest statt nur
+in einem einmaligen `kubectl scale`-Befehl. Das ReplicaSet hält drei Pods und
+ersetzt ausgefallene Instanzen.
+
+**Ergebnis:** [protokoll-scale.txt](kubernetes/protokolle/protokoll-scale.txt)
+zeigt drei Pods `1/1 Running` inklusive Spalte `NODE`.
+
+#### 7 – Hausübung Teil 3: Rolling Update ohne fehlgeschlagene Anfrage
+
+Für den finalen erfolgreichen Nachweis wurde ein neues Image gebaut. Die
+ConfigMap setzt ebenfalls `APP_VERSION: "3.0.0"`, da sie den im Image gesetzten
+Wert als Umgebungsvariable überschreibt. `minReadySeconds: 5` sorgt zusätzlich
+dafür, dass ein neuer Pod fünf Sekunden stabil Ready sein muss, bevor ein alter
+Pod ersetzt werden darf.
+
+```bash
+docker build -t expenses:v3 --build-arg APP_VERSION=3.0.0 .
+kind load docker-image expenses:v3 --name expenses
+```
+
+In `deployment.yaml` steht danach `image: expenses:v3`. Vor dem Update in einem
+zweiten Terminal die zeitgestempelte Prüfung starten:
+
+```bash
+while true; do
+  printf '%s  ' "$(date '+%F %T')"
+  curl -s -m 2 -o /dev/null -w '[%{http_code}]\n' http://localhost:30080/health || echo '[ERROR]'
+  sleep 0.2
+done | tee kubernetes/protokolle/protokoll-rollout.txt
+```
+
+Dann im ersten Terminal aktualisieren und den Status an das gleiche Protokoll
+anhängen:
+
+```bash
+{
+  echo
+  echo "# Rolling update to expenses:v3"
+  date
+  kubectl apply -f kubernetes/manifeste/configmap.yaml
+  kubectl apply -f kubernetes/manifeste/deployment.yaml
+  kubectl -n expenses rollout status deployment/expenses
+} | tee -a kubernetes/protokolle/protokoll-rollout.txt
+```
+
+Die Schleife mit `Ctrl+C` beenden und prüfen:
+
+```bash
+grep -E '\[(000|5[0-9][0-9])\]|\[ERROR\]' \
+  kubernetes/protokolle/protokoll-rollout.txt \
+  || echo "Keine fehlgeschlagenen Anfragen gefunden."
+
+curl -s http://localhost:30080/health; echo
+```
+
+**Ergebnis:** [protokoll-rollout.txt](kubernetes/protokolle/protokoll-rollout.txt)
+enthält keinen Fehlversuch; `/health` lieferte `{"status":"ok","version":"3.0.0"}`.
+
+##### Zusätzliche Diagnose beim ersten Update-Versuch
+
+Der erste Versuch mit `expenses:v2` enthielt einen einzelnen `[000]`-Eintrag
+und wurde daher nicht als finaler Nachweis verwendet. Diese Befehle dienten der
+Fehlersuche; die endgültige Wiederholung steht oben.
+
+```bash
+docker build -t expenses:v2 --build-arg APP_VERSION=2.0.0 .
+kind load docker-image expenses:v2 --name expenses
+
+kubectl -n expenses get pods -o wide
+kubectl -n expenses get events --sort-by=.lastTimestamp | tail -n 25
+kubectl -n expenses get deployment,pods -o wide
+kubectl -n expenses get endpointslice \
+  -l kubernetes.io/service-name=expenses-nodeport
+
+mv kubernetes/protokolle/protokoll-rollout.txt \
+  kubernetes/protokolle/protokoll-rollout-erster-versuch.txt
+```
+
+**Ergebnis:** Der erste Versuch diente nur der Fehlersuche und wurde vor dem
+finalen Commit entfernt. Die finale Datei enthält ausschliesslich den
+fehlerfreien v3-Nachweis.
+
+#### 8 – Hausübung Teil 4: Analyse
+
+Die geforderte Analyse liegt in [analyse.md](kubernetes/analyse.md). Sie erklärt
+Readiness, `maxUnavailable: 0`, die zwei Health-Endpunkte und die Gefahr einer
+datenbankprüfenden Liveness-Probe.
+
+#### 9 – Hausübung Teil 5: Rollback nachweisen
+
+```bash
+{
+  echo "# Rollback from expenses:v3 to the previous revision"
+  date
+  echo
+  echo "## History before rollback"
+  kubectl -n expenses rollout history deployment/expenses
+  echo
+  echo "## Rollback"
+  kubectl -n expenses rollout undo deployment/expenses
+  echo
+  echo "## Rollback status"
+  kubectl -n expenses rollout status deployment/expenses
+  echo
+  echo "## History after rollback"
+  kubectl -n expenses rollout history deployment/expenses
+} | tee kubernetes/protokolle/protokoll-rollback.txt
+```
+
+**Was es macht:** `rollout undo` löscht nichts, sondern aktiviert die vorherige
+Deployment-Revision wieder. Die Warnung zu `kubectl apply` ist dabei erwartbar.
+
+**Ergebnis:** [protokoll-rollback.txt](kubernetes/protokolle/protokoll-rollback.txt)
+enthält History, Undo und einen erfolgreichen Rollout-Status.
+
+#### 10 – Bonus: Horizontal Pod Autoscaler (HPA)
+
+Nach dem Rollback wieder den Sollzustand aus dem Manifest anwenden, damit die
+laufende Umgebung wieder `expenses:v3` verwendet:
+
+```bash
+kubectl apply -f kubernetes/manifeste/deployment.yaml
+kubectl -n expenses rollout status deployment/expenses
+```
+
+Der HPA benötigt den metrics-server. In kind ist für den lokalen Test zusätzlich
+`--kubelet-insecure-tls` nötig:
+
+```bash
+kubectl apply -f \
+  https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+kubectl -n kube-system patch deployment metrics-server --type=json \
+  -p='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]'
+
+kubectl -n kube-system rollout status deployment/metrics-server
+kubectl top nodes
+kubectl top pods -n expenses
+```
+
+HPA aktivieren und den Ausgangszustand speichern:
+
+```bash
+{
+  echo "# Horizontal Pod Autoscaler"
+  date
+  kubectl apply -f kubernetes/manifeste/hpa.yaml
+  echo
+  kubectl -n expenses get hpa
+} | tee kubernetes/protokolle/protokoll-hpa.txt
+```
+
+In einem zweiten Terminal den Verlauf aufzeichnen:
+
+```bash
+while true; do
+  date
+  kubectl -n expenses get hpa
+  sleep 5
+done | tee -a kubernetes/protokolle/protokoll-hpa.txt
+```
+
+Im ersten Terminal Last erzeugen:
+
+```bash
+kubectl -n expenses run load --image=busybox --restart=Never -- \
+  /bin/sh -c 'while true; do wget -q -O- http://expenses/health >/dev/null; done'
+```
+
+Nach dem Hochskalieren den Zustand ergänzen:
+
+```bash
+{
+  echo
+  echo "# HPA scaled up"
+  date
+  kubectl -n expenses get hpa
+  kubectl -n expenses get pods -o wide
+} | tee -a kubernetes/protokolle/protokoll-hpa.txt
+```
+
+Der HPA ist aktiviert; metrics-server liefert Werte. Die Last skalierte von drei
+auf vier App-Pods hoch, nach dem Beenden der Last sank die Replikazahl wieder
+auf die konfigurierte Mindestzahl zwei. Der vollständige Verlauf ist gespeichert.
+
+```bash
+kubectl -n expenses delete pod load
+```
+
+Die HPA-Beobachtung lief bis zum Rückgang der Spalte `REPLICAS` auf zwei und
+wurde danach mit `Ctrl+C` beendet. Der Nachweis liegt in
+`kubernetes/protokolle/protokoll-hpa.txt`.
+
+#### 11 – Lokalen Cluster aufräumen
+
+```bash
+kind delete cluster --name expenses
+```
+
+**Was es macht:** Entfernt nur den lokalen kind-Cluster mit seinen Knoten,
+Pods, Services und dem metrics-server. Docker-Images, Manifeste und alle
+gespeicherten Textprotokolle bleiben erhalten.
+
+**Ergebnis:** Der Cluster `expenses` wurde erfolgreich entfernt.

@@ -1,0 +1,24 @@
+# Stable in-cluster address for the pods. Pods are short-lived and change their
+# IP; the Service stays constant. It finds its pods via the selector
+# (app: expenses) and load-balances requests across all READY pods.
+#
+# In-cluster DNS name: expenses.expenses.svc.cluster.local
+# (scheme: <service>.<namespace>.svc.cluster.local)
+apiVersion: v1
+kind: Service
+metadata:
+  name: expenses
+  namespace: expenses
+  labels:
+    app: expenses
+spec:
+  type: ClusterIP
+  selector:
+    app: expenses
+  ports:
+    - name: http
+      port: 80
+      # targetPort is the container port (8000). A wrong value here is a common
+      # mistake: the Service is reachable but only returns timeouts.
+      targetPort: 8000
+      protocol: TCP

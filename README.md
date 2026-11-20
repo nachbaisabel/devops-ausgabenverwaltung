@@ -5,16 +5,12 @@
 Eine Webanwendung für Privatpersonen, um Ausgaben mit Betrag, Kategorie und
 Datum zu erfassen und nach Monat und Kategorie auszuwerten.
 
-**Warum dieses Projekt?** Das Semesterprojekt im Modul CDS212 weist eine
-vollständige DevOps-Kette von der Versionsverwaltung über Tests und Deployment
-bis zum Monitoring nach. Der fachliche Umfang bleibt bewusst klein.
+### Warum dieses Projekt?
+
+Das Semesterprojekt im Modul CDS212 weist eine vollständige DevOps-Kette von der Versionsverwaltung über Tests und Deployment bis zum Monitoring nach. Der fachliche Umfang bleibt bewusst klein.
+
 ---
-**Stand: Woche 7.** Zusätzlich lässt sich die lokale Infrastruktur mit
-Terraform erstellen und entfernen. Image, Container, Netzwerk und Volume
-werden über den Docker-Provider verwaltet. Healthcheck, Smoke-Test,
-Idempotenz, Drift-Erkennung und Portvalidierung wurden geprüft.
-Die nginx-Hausübung mit eigener HTML-Seite, Portvalidierung und URL-Output
-wurde ebenfalls erfolgreich geprüft.
+### Stand: Woche 8
 
 ---
 ## Geplanter Funktionsumfang (MVP)
@@ -126,6 +122,7 @@ devops-ausgabenverwaltung/
 │   ├── routes.py         # HTTP-Endpunkte: Anfragen annehmen und beantworten
 │   ├── models.py         # Expense-Datenmodell und Validierungsfunktionen
 │   └── repository.py     # Ausgaben speichern, IDs vergeben und Daten abrufen
+├── kubernetes/           # Kubernetes-Manifeste, Analyse und Nachweise Woche 8
 ├── screenshots/          # Nachweise
 ├── scripts/
 │   └── smoke-test.sh     # Prüft die laufende API
@@ -241,6 +238,16 @@ Voraussetzungen, Befehle und Nachweise stehen in
 Diese Variante verwendet In-Memory-Speicherung. Das eingebundene Volume macht die Ausgaben nicht persistent. Terraform, Compose und Flask verwenden standardmässig denselben Host-Port 8000 und müssen daher abwechselnd betrieben werden.
 
 Die separate [Hausübung in terraform/](terraform/README.md) erstellt einen nginx-Webserver mit eigener HTML-Seite auf Host-Port 8080. Portvalidierung, URL-Output und Erstellungsplan sind dort dokumentiert.
+
+---
+## Kubernetes mit kind
+
+Die Ausgabenverwaltung läuft lokal in einem kind-Cluster mit drei Replikaten,
+Liveness- und Readiness-Probes, Rolling Updates, Rollback und einem optionalen
+Horizontal Pod Autoscaler.
+
+Manifeste, Befehle, Analyse und Textnachweise stehen in
+[kubernetes/README.md](kubernetes/README.md).
 
 ---
 ## Deployment auf Render

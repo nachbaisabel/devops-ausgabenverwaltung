@@ -1,0 +1,464 @@
+# Horizontal Pod Autoscaler
+Fri Nov 20 14:49:29 CET 2026
+horizontalpodautoscaler.autoscaling/expenses created
+
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         3          0s
+Fri Nov 20 14:50:13 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         3          44s
+Fri Nov 20 14:50:18 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         3          49s
+Fri Nov 20 14:50:23 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         3          54s
+Fri Nov 20 14:50:28 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         3          59s
+Fri Nov 20 14:50:33 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         3          64s
+Fri Nov 20 14:50:38 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         3          69s
+Fri Nov 20 14:50:43 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         3          74s
+Fri Nov 20 14:50:48 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         3          79s
+Fri Nov 20 14:50:53 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         3          84s
+Fri Nov 20 14:50:58 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         3          89s
+Fri Nov 20 14:51:03 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         3          94s
+Fri Nov 20 14:51:08 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         3          99s
+Fri Nov 20 14:51:13 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         3          104s
+Fri Nov 20 14:51:18 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 6%/70%   2         5         3          109s
+Fri Nov 20 14:51:23 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 6%/70%   2         5         3          114s
+Fri Nov 20 14:51:28 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 6%/70%   2         5         3          119s
+Fri Nov 20 14:51:33 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 55%/70%   2         5         3          2m4s
+Fri Nov 20 14:51:38 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 55%/70%   2         5         3          2m9s
+Fri Nov 20 14:51:43 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 55%/70%   2         5         3          2m14s
+Fri Nov 20 14:51:49 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 84%/70%   2         5         3          2m20s
+Fri Nov 20 14:51:54 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 84%/70%   2         5         3          2m25s
+Fri Nov 20 14:51:59 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 84%/70%   2         5         3          2m30s
+Fri Nov 20 14:52:04 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 20%/70%   2         5         4          2m35s
+Fri Nov 20 14:52:09 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 20%/70%   2         5         4          2m40s
+Fri Nov 20 14:52:14 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 20%/70%   2         5         4          2m45s
+Fri Nov 20 14:52:19 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          2m50s
+Fri Nov 20 14:52:24 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          2m55s
+Fri Nov 20 14:52:29 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          3m
+Fri Nov 20 14:52:34 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 43%/70%   2         5         4          3m5s
+Fri Nov 20 14:52:39 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 43%/70%   2         5         4          3m10s
+Fri Nov 20 14:52:44 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 69%/70%   2         5         4          3m15s
+Fri Nov 20 14:52:49 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 69%/70%   2         5         4          3m20s
+Fri Nov 20 14:52:54 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 69%/70%   2         5         4          3m25s
+Fri Nov 20 14:52:59 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 50%/70%   2         5         4          3m30s
+
+# HPA scaled up
+Fri Nov 20 14:53:01 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 50%/70%   2         5         4          3m32s
+NAME                        READY   STATUS    RESTARTS   AGE     IP            NODE               NOMINATED NODE   READINESS GATES
+expenses-6bb4d56765-7zsfd   1/1     Running   0          6m13s   10.244.2.12   expenses-worker    <none>           <none>
+expenses-6bb4d56765-jnvk4   1/1     Running   0          6m33s   10.244.1.6    expenses-worker2   <none>           <none>
+expenses-6bb4d56765-rmdf6   1/1     Running   0          77s     10.244.1.9    expenses-worker2   <none>           <none>
+expenses-6bb4d56765-zlknc   1/1     Running   0          6m23s   10.244.2.11   expenses-worker    <none>           <none>
+load                        1/1     Running   0          2m2s    10.244.1.8    expenses-worker2   <none>           <none>
+Fri Nov 20 14:53:04 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 50%/70%   2         5         4          3m35s
+Fri Nov 20 14:53:09 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 50%/70%   2         5         4          3m40s
+Fri Nov 20 14:53:14 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          3m45s
+Fri Nov 20 14:53:19 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          3m50s
+Fri Nov 20 14:53:24 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          3m55s
+Fri Nov 20 14:53:29 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 20%/70%   2         5         4          4m
+Fri Nov 20 14:53:34 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 20%/70%   2         5         4          4m5s
+Fri Nov 20 14:53:39 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 20%/70%   2         5         4          4m10s
+Fri Nov 20 14:53:45 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 71%/70%   2         5         4          4m16s
+Fri Nov 20 14:53:50 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 71%/70%   2         5         4          4m21s
+Fri Nov 20 14:53:55 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 71%/70%   2         5         4          4m26s
+Fri Nov 20 14:54:00 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 41%/70%   2         5         4          4m31s
+Fri Nov 20 14:54:05 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 41%/70%   2         5         4          4m36s
+Fri Nov 20 14:54:10 CET 2026
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 41%/70%   2         5         4          4m41s
+Fri Nov 20 14:54:15 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 3%/70%   2         5         4          4m46s
+Fri Nov 20 14:54:20 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 3%/70%   2         5         4          4m51s
+Fri Nov 20 14:54:25 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 3%/70%   2         5         4          4m56s
+Fri Nov 20 14:54:30 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          5m1s
+Fri Nov 20 14:54:35 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          5m6s
+Fri Nov 20 14:54:40 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          5m11s
+Fri Nov 20 14:54:45 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          5m16s
+Fri Nov 20 14:54:50 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          5m21s
+Fri Nov 20 14:54:55 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          5m26s
+Fri Nov 20 14:55:00 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          5m31s
+Fri Nov 20 14:55:05 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          5m36s
+Fri Nov 20 14:55:10 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          5m41s
+Fri Nov 20 14:55:15 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          5m47s
+Fri Nov 20 14:55:21 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          5m52s
+Fri Nov 20 14:55:26 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          5m57s
+Fri Nov 20 14:55:31 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          6m2s
+Fri Nov 20 14:55:36 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          6m7s
+Fri Nov 20 14:55:41 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          6m12s
+Fri Nov 20 14:55:46 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          6m17s
+Fri Nov 20 14:55:51 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          6m22s
+Fri Nov 20 14:55:56 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          6m27s
+Fri Nov 20 14:56:01 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          6m32s
+Fri Nov 20 14:56:06 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          6m37s
+Fri Nov 20 14:56:11 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          6m42s
+Fri Nov 20 14:56:16 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          6m47s
+Fri Nov 20 14:56:21 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          6m52s
+Fri Nov 20 14:56:26 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          6m57s
+Fri Nov 20 14:56:31 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          7m2s
+Fri Nov 20 14:56:36 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          7m8s
+Fri Nov 20 14:56:42 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          7m13s
+Fri Nov 20 14:56:47 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          7m18s
+Fri Nov 20 14:56:52 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          7m23s
+Fri Nov 20 14:56:57 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          7m28s
+Fri Nov 20 14:57:02 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          7m33s
+Fri Nov 20 14:57:07 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          7m38s
+Fri Nov 20 14:57:12 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          7m43s
+Fri Nov 20 14:57:17 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          7m48s
+Fri Nov 20 14:57:22 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          7m53s
+Fri Nov 20 14:57:27 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          7m58s
+Fri Nov 20 14:57:32 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          8m3s
+Fri Nov 20 14:57:37 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          8m8s
+Fri Nov 20 14:57:42 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          8m13s
+Fri Nov 20 14:57:47 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          8m18s
+Fri Nov 20 14:57:52 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          8m23s
+Fri Nov 20 14:57:58 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          8m29s
+Fri Nov 20 14:58:03 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          8m34s
+Fri Nov 20 14:58:08 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          8m39s
+Fri Nov 20 14:58:13 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          8m44s
+Fri Nov 20 14:58:18 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          8m49s
+Fri Nov 20 14:58:23 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          8m54s
+Fri Nov 20 14:58:28 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          8m59s
+Fri Nov 20 14:58:33 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          9m4s
+Fri Nov 20 14:58:38 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          9m9s
+Fri Nov 20 14:58:43 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          9m14s
+Fri Nov 20 14:58:48 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          9m19s
+Fri Nov 20 14:58:53 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          9m24s
+Fri Nov 20 14:58:58 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         4          9m29s
+Fri Nov 20 14:59:03 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         3          9m34s
+Fri Nov 20 14:59:08 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         3          9m39s
+Fri Nov 20 14:59:13 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         3          9m45s
+Fri Nov 20 14:59:19 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          9m50s
+Fri Nov 20 14:59:24 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          9m55s
+Fri Nov 20 14:59:29 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          10m
+Fri Nov 20 14:59:34 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          10m
+Fri Nov 20 14:59:39 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          10m
+Fri Nov 20 14:59:44 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          10m
+Fri Nov 20 14:59:49 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          10m
+Fri Nov 20 14:59:54 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          10m
+Fri Nov 20 14:59:59 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          10m
+Fri Nov 20 15:00:04 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          10m
+Fri Nov 20 15:00:09 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          10m
+Fri Nov 20 15:00:14 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          10m
+Fri Nov 20 15:00:19 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          10m
+Fri Nov 20 15:00:24 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          10m
+Fri Nov 20 15:00:30 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          11m
+Fri Nov 20 15:00:35 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          11m
+Fri Nov 20 15:00:40 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          11m
+Fri Nov 20 15:00:45 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          11m
+Fri Nov 20 15:00:50 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          11m
+Fri Nov 20 15:00:55 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          11m
+Fri Nov 20 15:01:00 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          11m
+Fri Nov 20 15:01:05 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          11m
+Fri Nov 20 15:01:10 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          11m
+Fri Nov 20 15:01:15 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          11m
+Fri Nov 20 15:01:20 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          11m
+Fri Nov 20 15:01:25 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          11m
+Fri Nov 20 15:01:30 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          12m
+Fri Nov 20 15:01:35 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          12m
+Fri Nov 20 15:01:40 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          12m
+Fri Nov 20 15:01:45 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          12m
+Fri Nov 20 15:01:50 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          12m
+Fri Nov 20 15:01:55 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          12m
+Fri Nov 20 15:02:01 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          12m
+Fri Nov 20 15:02:06 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          12m
+Fri Nov 20 15:02:11 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          12m
+Fri Nov 20 15:02:16 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          12m
+Fri Nov 20 15:02:21 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          12m
+Fri Nov 20 15:02:26 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          12m
+Fri Nov 20 15:02:31 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          13m
+Fri Nov 20 15:02:36 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          13m
+Fri Nov 20 15:02:41 CET 2026
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+expenses   Deployment/expenses   cpu: 1%/70%   2         5         2          13m
