@@ -228,3 +228,14 @@ __marimo__/
 
 # terraform state
 *.tfstate*
+.terraform/
+*.tfstate*
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+crash.log
+
+# Never commit real secrets. The example template (secret.example.yaml) stays
+# versioned; the secret.yaml derived from it with real values does not.
+secret.yaml
+*.secret.yaml

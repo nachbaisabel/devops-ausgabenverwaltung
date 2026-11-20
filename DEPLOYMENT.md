@@ -298,13 +298,34 @@ DELETE /api/expenses/<id>   200
 ---
 ## Deployment auf Kubernetes (lokal, kind)
 
+Die lokale Kubernetes-Variante wird separat vom Render-Service mit kind
+ausgeführt. Die Manifeste und Nachweise liegen unter
+[`kubernetes/`](kubernetes/README.md).
+
 ```bash
-kind load docker-image <image>:<tag>
-kubectl apply -f k8s/
-kubectl rollout status deployment/<week8> -n <week8space>
+cd kubernetes/manifeste
+kind create cluster --config kind-config.yaml
+docker build -t expenses:local --build-arg APP_VERSION=1.0.0 ../..
+kind load docker-image expenses:local --name expenses
+kubectl apply -f namespace.yaml
+kubectl apply -f configmap.yaml
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+kubectl apply -f service-nodeport.yaml
+kubectl -n expenses rollout status deployment/expenses
 ```
 
-**Kontrolle:** `kubectl get pods -n <week8space>` zeigt ≥ 2 Pods `Running` / `1/1`.
+**Kontrolle:**
+
+```bash
+kubectl -n expenses get pods -o wide
+curl -i http://localhost:30080/health
+curl -i http://localhost:30080/ready
+```
+
+Erwartet: drei Pods `1/1 Running`; beide Endpunkte liefern HTTP 200. Die
+ausführliche Anleitung, Rolling-Update-Nachweise und der HPA-Bonus stehen in
+[`kubernetes/README.md`](kubernetes/README.md).
 
 ---
 ## F - Rollback
@@ -337,7 +358,17 @@ Anschliessend wird mit dem Smoke-Test geprüft, ob die Anwendung wieder funktion
 
 ### Kubernetes
 
-`kubectl rollout undo deployment/<week8> -n <week8space>`
+```bash
+kubectl -n expenses rollout history deployment/expenses
+kubectl -n expenses rollout undo deployment/expenses
+kubectl -n expenses rollout status deployment/expenses
+```
+
+**Kontrolle:** Der Status endet mit `successfully rolled out`. Das Kommando
+aktiviert die vorherige Deployment-Revision, löscht aber keine Git-Änderung und
+stellt keine In-Memory-Ausgaben wieder her. Danach kann der deklarierte
+Sollzustand erneut mit `kubectl apply -f kubernetes/manifeste/deployment.yaml`
+angewendet werden.
 
 --- 
 ## G - Störungsbehandlung / Troubleshooting
