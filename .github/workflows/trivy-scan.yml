@@ -33,7 +33,7 @@ jobs:
         run: docker build -t expenses:local .
 
       - name: Scan image with Trivy (gate + SARIF)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: expenses:local
           format: sarif
