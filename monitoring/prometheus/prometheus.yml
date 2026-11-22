@@ -1,0 +1,28 @@
+# Prometheus configuration for the Expenses observability stack.
+# https://prometheus.io/docs/prometheus/latest/configuration/configuration/
+
+global:
+  # How often Prometheus pulls (scrapes) metrics from each target.
+  scrape_interval: 15s
+  # How often the alerting rules are evaluated.
+  evaluation_interval: 15s
+
+# Load alerting rules from these files.
+rule_files:
+  - /etc/prometheus/alert.rules.yml
+
+scrape_configs:
+  # The Expenses application. "web" is the compose service name; inside the
+  # compose network it resolves to the app container. Never use "localhost"
+  # here - inside the Prometheus container localhost is Prometheus itself.
+  - job_name: expenses
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - web:8000
+
+  # Prometheus scraping its own metrics, useful to check that it is healthy.
+  - job_name: prometheus
+    static_configs:
+      - targets:
+          - localhost:9090

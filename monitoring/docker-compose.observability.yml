@@ -1,0 +1,96 @@
+# Observability stack for the Expenses application.
+#
+# Services:
+#   web         - the Expenses app, built from the course example application
+#   db          - PostgreSQL 16, the same backend used from week 4 onwards
+#   prometheus  - scrapes /metrics from web and evaluates the alert rules
+#   grafana     - dashboards, datasource and dashboards are pre-provisioned
+#
+# Run from the week folder (woche-09-monitoring-devsecops):
+#   docker compose -f code/docker-compose.observability.yml up -d --build
+#   docker compose -f code/docker-compose.observability.yml down
+#   docker compose -f code/docker-compose.observability.yml down -v   # also drop volumes
+#
+# Relative paths below are resolved from the directory of this file (code/).
+
+services:
+  web:
+    build:
+      context: ..
+      args:
+        APP_VERSION: 1.0.0
+    # Tag the built image so the security lab can run "trivy image expenses:local".
+    image: expenses:local
+    ports:
+      - "8000:8000"
+    environment:
+      # "db" is the DNS name of the database container on the compose network.
+      DATABASE_URL: postgresql://expenses:changeme@db:5432/expenses
+      APP_VERSION: 1.0.0
+      LOG_LEVEL: INFO
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - observability
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: expenses
+      POSTGRES_PASSWORD: changeme
+      POSTGRES_DB: expenses
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U expenses -d expenses" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - observability
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/alert.rules.yml:/etc/prometheus/alert.rules.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+    restart: unless-stopped
+    networks:
+      - observability
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      # Optional: allow read-only access without logging in. Off by default.
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/etc/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - observability
+
+volumes:
+  db-data:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  observability:
+    driver: bridge

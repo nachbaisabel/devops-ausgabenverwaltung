@@ -1,0 +1,18 @@
+# Grafana datasource provisioning.
+# https://grafana.com/docs/grafana/latest/administration/provisioning/#datasources
+#
+# The fixed uid "prometheus" lets the provisioned dashboard reference this
+# datasource without a manual selection after import.
+
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    uid: prometheus
+    type: prometheus
+    access: proxy
+    # "prometheus" is the compose service name, reachable inside the network.
+    # Do NOT use localhost:9090 here - that would point at the Grafana container.
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
