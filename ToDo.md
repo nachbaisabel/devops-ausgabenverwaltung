@@ -12,11 +12,11 @@ Mein Kurs: **CDS212 – DevOps** · Mein Projekt: **Ausgabenverwaltung**
 - [x] Woche 5
 - [x] Woche 6
 - [x] Woche 7
-- [ ] Woche 8
+- [x] Woche 8
 - [ ] Woche 9
 - [ ] Woche 10
 
-**Aktuell: Woche 8 – Kubernetes.**
+**Aktuell: Woche 9 – Monitoring, Logging und DevSecOps.**
 
 
 
@@ -29,7 +29,7 @@ Mein Kurs: **CDS212 – DevOps** · Mein Projekt: **Ausgabenverwaltung**
 
 ### Spätere ToDos:
 - [ ] einfaches HTML-Frontend: `GET` `/`
-- [ ] API Metriken ergänzen: `GET` `/metrics` 
+- [x] API-Metriken ergänzen: `GET` `/metrics`
 - [ ] API Statistiken ergänzen: `GET` `/api/expenses/stats` 
 
 ### Noch offen W6
@@ -1217,3 +1217,222 @@ Pods, Services und dem metrics-server. Docker-Images, Manifeste und alle
 gespeicherten Textprotokolle bleiben erhalten.
 
 **Ergebnis:** Der Cluster `expenses` wurde erfolgreich entfernt.
+
+---
+## Woche 9 – Monitoring, Logging und DevSecOps
+
+**Ziel:** Die Ausgabenverwaltung mit Metriken, Dashboard, sinnvollen Alarmen
+und einem nachvollziehbaren Schwachstellen-Scan betreiben. Die bisherigen
+Deployments auf Render und in kind bleiben davon getrennt.
+
+### Vorbereitung
+
+- [x] Theorie, Labor sowie Issue und Branch `feature/monitoring-devsecops` erledigt.
+- [x] `MONITORING.md` und die Artefakte unter `monitoring/` angelegt; keine echten Secrets versioniert.
+- [x] Prometheus-Exporter und `/metrics` mit `expenses_info`, Request-Zählern und Latenzen ergänzt.
+
+### Monitoring und Dashboard
+
+- [x] Observability-Stack mit `expenses`, Prometheus und Grafana gestartet; Target `web:8000/metrics` ist `UP`.
+- [x] Last erzeugt und Request-Rate, Fehlerraten sowie p95-Latenz mit PromQL geprüft.
+- [x] Dashboard mit fünf Panels exportiert und als Screenshot gesichert.
+- [x] Alarm `ExpensesDown` bis `Firing` getestet, dokumentiert und Dienst wiederhergestellt.
+
+### Hausübung: `MONITORING.md`
+
+- [x] Fünf Panels, zwei 30-Tage-SLOs samt Error Budget und das eigene p95-Panel dokumentiert.
+- [x] Symptombasierte Regel `HighClientErrorRate` erstellt, mit `promtool` validiert und Runbook dokumentiert.
+- [x] Drei unterschiedliche HIGH-Funde mit CVE, Ausnutzbarkeit und Empfehlung bewertet.
+
+### DevSecOps und Abschluss
+
+- [x] `trivy image expenses:local` ausführen und Rohbericht unter
+  `monitoring/trivy/scan-expenses.txt` sichern.
+- [x] Lokales Trivy-Gate mit `--severity HIGH,CRITICAL --exit-code 1`
+  ausführen und das erwartete Fehlschlagen bei HIGH-Funden prüfen.
+- [x] Artefakte, Logs und Screenshots auf Secrets geprüft; keine `.trivyignore` verwendet.
+- [x] README ergänzt; Ruff, Formatierung und Pytest erfolgreich (`45 passed`, 82,04 % Coverage).
+- [ ] Commit, Push, PR/Merge und GitHub-Lauf `trivy-scan` prüfen.
+
+
+### Durchgeführter Ablauf und Befehle
+
+#### 1 – Prometheus-Metriken in der Flask-App
+
+In `requirements.txt` wurde `prometheus-flask-exporter~=0.23` ergänzt und die
+virtuelle Umgebung aktualisiert:
+
+```bash
+pip install -r requirements.txt
+ruff check app/__init__.py
+ruff format app/__init__.py
+```
+
+**Ergebnis:** `All checks passed!`
+
+`app/__init__.py` stellt nun über den Exporter `/metrics` bereit. Lokal testen:
+
+```bash
+python -m flask --app wsgi:app run --host 127.0.0.1 --port 8000
+```
+
+In einem zweiten Terminal:
+
+```bash
+curl -s http://127.0.0.1:8000/metrics | grep -E 'expenses_info|flask_http_request_total'
+```
+
+**Ergebnis:** `expenses_info{version="1.0.0-local"} 1.0`.
+
+```bash
+curl -s http://127.0.0.1:8000/health
+curl -s http://127.0.0.1:8000/api/expenses
+curl -s http://127.0.0.1:8000/metrics | grep 'flask_http_request_total'
+```
+
+**Ergebnis:** `flask_http_request_total{method="GET",status="200"} 2.0`.
+Den lokalen Flask-Server danach im ersten Terminal mit `Ctrl+C` beenden.
+
+#### 2 – Observability-Stack vorbereiten und starten
+
+Die Kursstruktur unter `woche-09-monitoring-devsecops/code` wurde nach
+`monitoring/` kopiert und für `expenses` angepasst. Dazu gehören Grafana,
+Prometheus, Trivy, das Lastskript und die Compose-Datei.
+
+```bash
+docker compose -f monitoring/docker-compose.observability.yml config
+docker compose -f monitoring/docker-compose.observability.yml up -d --build
+docker compose -f monitoring/docker-compose.observability.yml ps
+```
+
+**Ergebnis:** Die Konfiguration ist gültig. `db` ist `healthy`; `web` ist
+`Up (healthy)`; Prometheus und Grafana sind `Up`.
+
+In Prometheus unter `http://localhost:9090/targets` steht `expenses (1/1 up)`
+mit Endpoint `http://web:8000/metrics` auf **UP**.
+
+#### 3 – Last erzeugen und Dashboard prüfen
+
+Für valide erfolgreiche POST-Requests wurde der Payload in
+`monitoring/last-erzeugen.sh` ergänzt:
+
+```bash
+-d '{"title":"Load test expense","amount":"1.00","date":"2026-11-21","category":"Other"}' \
+```
+
+Danach Last erzeugen:
+
+```bash
+bash monitoring/last-erzeugen.sh http://localhost:8000
+```
+
+Im Grafana-Dashboard unter `http://localhost:3000` wurde über
+**Edit → Add visualization** ein eigenes Panel ergänzt:
+
+```promql
+histogram_quantile(
+  0.95,
+  sum by (le) (
+    rate(flask_http_request_duration_seconds_bucket[5m])
+  )
+)
+```
+
+**Ergebnis:** Das Panel heißt `p95 latency`, nutzt die Einheit `seconds (s)`
+und zeigt die Latenz, unter der 95 % der Requests bleiben. Das exportierte
+Dashboard liegt unter `monitoring/grafana/dashboards/expenses-overview.json`;
+der Nachweis unter `monitoring/screenshots/dashboard.png`.
+
+#### 4 – Alarm auslösen und wiederherstellen
+
+Die Alarmübersicht lautet `http://localhost:9090/alerts`.
+
+```bash
+docker compose -f monitoring/docker-compose.observability.yml stop web
+```
+
+**Ergebnis:** `ExpensesDown` wechselte von **Inactive** über **Pending** nach
+einer Minute zu **Firing**. Der Nachweis liegt unter
+`monitoring/screenshots/alert-firing.png`.
+
+Danach die App wiederherstellen:
+
+```bash
+docker compose -f monitoring/docker-compose.observability.yml up -d web
+curl -s http://localhost:8000/health
+```
+
+**Ergebnis:** `{"status":"ok","version":"1.0.0"}`.
+
+#### 5 – Eigene Alert-Regel
+
+In `monitoring/prometheus/alert.rules.yml` ergänzt:
+
+> Wenn mehr als 20 % aller Requests fünf Minuten lang mit einem 4xx-Status
+> abgewiesen werden, löst `HighClientErrorRate` eine Warnung aus.
+
+Die Regel ist symptombasiert: Viele abgewiesene Requests können auf einen
+kaputten Client, falsche API-Nutzung oder eine fehlerhafte Eingabevalidierung
+hindeuten. Die Dauer `for: 5m` verhindert Fehlalarme durch kurze Spitzen.
+
+```bash
+docker compose -f monitoring/docker-compose.observability.yml exec prometheus \
+  promtool check rules /etc/prometheus/alert.rules.yml
+docker compose -f monitoring/docker-compose.observability.yml restart prometheus
+```
+
+**Ergebnis:** `SUCCESS: 4 rules found`. Unter
+`http://localhost:9090/alerts` sind nun vier Regeln sichtbar, darunter
+`HighClientErrorRate`.
+
+#### 6 – Trivy-Sicherheitsnachweis
+
+```bash
+trivy image expenses:local 2>&1 | tee monitoring/trivy/scan-expenses.txt
+```
+
+**Ergebnis:** Der vollständige Rohbericht ist unter
+`monitoring/trivy/scan-expenses.txt` gespeichert.
+
+| Bereich | Ergebnis | Einordnung |
+|---|---|---|
+| Image `expenses:local` (Debian 13.7) | 234 Funde: 7 UNKNOWN, 78 LOW, 98 MEDIUM, 51 HIGH, 0 CRITICAL | Die Mehrheit kommt aus Betriebssystem-Paketen des Debian-/Python-Basisimages, nicht aus eigenem Flask-Code. |
+| Python-Abhängigkeiten | 6 Funde: 1 LOW, 5 MEDIUM, 0 HIGH, 0 CRITICAL | Die direkten Python-Abhängigkeiten sind aktuell deutlich weniger kritisch als das Basisimage. |
+| Doppelte CVEs | Gleiches Problem kann in mehreren Paketen erscheinen, z. B. bei `ncurses`, `openssl` oder `util-linux` | Eine CVE wird für die Analyse nur einmal bewertet, nicht pro Paketzeile mehrfach. |
+| Container-Kontext | Die App läuft als nicht privilegierter `appuser` | Das reduziert Folgen eines erfolgreichen Angriffs, entfernt die Schwachstellen im Basisimage aber nicht. |
+
+Für die Hausübung werden drei unterschiedliche HIGH-Funde genauer bewertet:
+
+- `CVE-2026-76642` in `mount` bzw. `util-linux`
+- `CVE-2026-124709` in `openssl`
+- `CVE-2026-85091` in `zlib1g`; eine Fixed Version ist vorhanden
+
+
+
+#### 7 – Trivy-Gate und GitHub Actions vorbereiten
+
+Das lokale Security-Gate bricht bei HIGH- oder CRITICAL-Funden absichtlich mit
+einem Fehlercode ab:
+
+```bash
+trivy image --severity HIGH,CRITICAL --exit-code 1 expenses:local
+echo $?
+```
+
+**Ergebnis:** Exit-Code `1`, da das Image HIGH-Funde enthält. Das bestätigt,
+dass ein Sicherheitsfund die Pipeline blockieren kann.
+
+Der Workflow liegt unter `.github/workflows/trivy-scan.yml`. Er baut das Image,
+erstellt einen SARIF-Bericht und lädt ihn in GitHub Security hoch. Durch
+`ignore-unfixed: true` blockiert er nur HIGH- und CRITICAL-Funde mit bekannter
+Korrektur.
+
+#### 8 – Abschliessende Qualitätsprüfung
+
+```bash
+ruff check .
+ruff format --check .
+python -m pytest --cov=app --cov-report=term-missing
+```
+
+**Ergebnis:** `All checks passed!`, `45 passed` und `Total coverage: 82.04%`.

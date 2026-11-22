@@ -1,0 +1,19 @@
+# Grafana dashboard provisioning.
+# https://grafana.com/docs/grafana/latest/administration/provisioning/#dashboards
+#
+# Grafana loads every *.json dashboard found under the configured path on start
+# and keeps watching it (updateIntervalSeconds).
+
+apiVersion: 1
+
+providers:
+  - name: Expenses
+    orgId: 1
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/dashboards
+      foldersFromFilesStructure: false

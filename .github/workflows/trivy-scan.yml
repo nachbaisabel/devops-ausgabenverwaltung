@@ -1,0 +1,52 @@
+# GitHub Actions workflow: build the container image and scan it with Trivy.
+# Copy this file to .github/workflows/trivy-scan.yml in your own project repo.
+#
+# It does two things:
+#   1. Produces a SARIF report and uploads it to the GitHub Security tab
+#      (Code scanning alerts), so findings are visible over time.
+#   2. Fails the build when a CRITICAL or HIGH vulnerability with a known fix
+#      exists - this is the security gate.
+#
+# Adjust the build context below if your Dockerfile is not in the repo root.
+
+name: trivy-scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  # Required so the SARIF upload can write to the Security tab.
+  security-events: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t expenses:local .
+
+      - name: Scan image with Trivy (gate + SARIF)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: expenses:local
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+          # Only fail on issues that actually have a fix available.
+          ignore-unfixed: true
+          # Non-zero exit fails the job -> this is the gate.
+          exit-code: "1"
+
+      - name: Upload SARIF to GitHub Security
+        # Runs even when the scan step failed the gate, so findings still show up.
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif

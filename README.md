@@ -250,6 +250,13 @@ Manifeste, Befehle, Analyse und Textnachweise stehen in
 [kubernetes/README.md](kubernetes/README.md).
 
 ---
+## Monitoring
+
+Der lokale Monitoring-Stack mit Prometheus und Grafana liegt im Ordner
+[`monitoring/`](monitoring/). Eine Anleitung zum Starten, zu den Dashboards,
+Alarmregeln und zum Trivy-Scan steht in [MONITORING.md](MONITORING.md).
+
+---
 ## Deployment auf Render
 
 Öffentliche Instanz: https://expenses-dsjj.onrender.com
